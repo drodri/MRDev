@@ -1,6 +1,6 @@
 world: controlTest.world
 robots: 1
-neo 13000 -6 5 0
+neo 13000 -7 -5 0
 persons: 40
 noname  1.8 -3 4 0.1
 noname  1.2 -2 1 0.1

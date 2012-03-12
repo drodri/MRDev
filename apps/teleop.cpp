@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include "glutapp.h"
+#include "reactivecontrol.h"
+#include "trajcontrol.h"
 
 using namespace mr;
 using namespace std;
@@ -14,20 +16,41 @@ public:
 	{
 		world+=robot;
 		scene.addObject(&world);
+		scene.SetViewPoint(35,160,25);	
 		va=vg=0;
+
+		vector<Vector2D> path;
+		path.push_back(Vector2D(0,0));
+		path.push_back(Vector2D(20,0));
+		path.push_back(Vector2D(20,10));
+		path.push_back(Vector2D(0,10));
+		path.push_back(Vector2D(0,1));
+		//path.push_back(Vector2D(0,15);
+
+		traj.setPath(path);
 	}
 	void Draw(void)
 	{
 		scene.Draw();
+		traj.drawGL();
+		control.drawGL();
 	}
 	void Timer(float time)
 	{
-		robot->move(va,vg);
 		Odometry odom;
 		LaserData laserData;
 
 		robot->getOdometry(odom);
 		robot->getLaserData(laserData);
+
+		traj.setData(odom);
+		traj.getSpeed(va,vg);
+
+		control.setCommand(va,vg);
+		control.setData(odom,laserData);
+		float va2,vg2;
+		control.getSpeed(va2,vg2);	
+		robot->move(va2,vg2);
 	}
 	void Key(unsigned char key)
 	{
@@ -70,6 +93,8 @@ private:
 	GLScene scene;
 	World world;
 	MobileRobot* robot;
+	ReactiveControl control;
+	TrajControl traj;
 	
 };
 
