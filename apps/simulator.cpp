@@ -11,6 +11,7 @@ public:
 	MyGlutApp(string name,Simulator& s):GlutApp(name),simulator(s)
 	{
 		scene.addObject(simulator.getWorld());
+		scene.SetViewPoint(35,160,25);	
 	}
 	void Draw(void)
 	{
