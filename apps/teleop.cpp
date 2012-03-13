@@ -23,10 +23,8 @@ public:
 		path.push_back(Vector2D(0,0));
 		path.push_back(Vector2D(20,0));
 		path.push_back(Vector2D(20,10));
-		path.push_back(Vector2D(0,10));
-		path.push_back(Vector2D(0,1));
-		//path.push_back(Vector2D(0,15);
-
+		path.push_back(Vector2D(-1,10));
+		path.push_back(Vector2D(-1,1));
 		traj.setPath(path);
 	}
 	void Draw(void)
@@ -47,7 +45,7 @@ public:
 		traj.getSpeed(va,vg);
 
 		control.setCommand(va,vg);
-		control.setData(odom,laserData);
+		control.setData(laserData);
 		float va2,vg2;
 		control.getSpeed(va2,vg2);	
 		robot->move(va2,vg2);
@@ -95,7 +93,6 @@ private:
 	MobileRobot* robot;
 	ReactiveControl control;
 	TrajControl traj;
-	
 };
 
 void printUsage();

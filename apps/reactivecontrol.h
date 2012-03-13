@@ -8,12 +8,11 @@ public:
 	void drawGL()
 	{
 	}
-	void setData(const Odometry& odom, const LaserData& laser)
+	void setData(const LaserData& laser)
 	{
 		speed=speedCommand;
 		rot=rotCommand;
 
-		current=odom.pose;
 		vector<double> ranges=laser.getRanges();
 		vector<Angle> angles=laser.getAngles();
 		float min=1;
@@ -49,7 +48,6 @@ public:
 	}
 protected:
 	float speed,rot;
-	Transformation3D current;
 	float speedCommand, rotCommand;
 
 
