@@ -41,7 +41,13 @@ public:
 		robot->getOdometry(odom);
 		robot->getLaserData(laserData);
 
-		traj.setData(odom);
+		//The odometry is full 3D, lets handle it only in 2D, as a Pose (x, y, theta)
+		Transformation3D pose=odom.pose;
+		double roll,pitch,yaw;
+		pose.orientation.getRPY(roll,pitch,yaw);
+		Pose robotPose(pose.position.x,pose.position.y,yaw);
+
+		traj.setData(robotPose);
 		traj.getSpeed(va,vg);
 
 		control.setCommand(va,vg);
