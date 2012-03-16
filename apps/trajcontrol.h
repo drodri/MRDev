@@ -1,9 +1,8 @@
 #pragma once
 #include "mrcore/mrcore.h"
 
-class TrajControl //: public GLObject
+class TrajControl
 {
-	//DECLARE_MR_OBJECT(ReactiveControl)
 public:	
 	void drawGL()
 	{
@@ -12,20 +11,17 @@ public:
 	void setPath(Path2D p)
 	{
 		path=p;
-		path.setRGB(255,0,255);
+		path.setColor(255,0,255);
 	}
-	void setData(const Odometry& odom)
+	void setData(const Pose& pose)
 	{
-		current=odom.pose;
 		vector<Vector2D> points=path.points;
-		Vector2D p(current.position.x,current.position.y);
 		float min=1000;
 		int mini=-1;
 		for(int i=0;i<points.size()-1;i++)
 		{
-			Segment2d seg(points[i],points[i+1]);
-			double dist=pointDistanceToSegment(p, seg);
-		//	cout<<"Dist to : "<<i<<" is: "<<dist<<endl;
+			Segment2D seg(points[i],points[i+1]);
+			double dist=seg.distance(pose.position());
 			if(dist<min)
 			{
 				min=dist;
@@ -36,15 +32,8 @@ public:
 		{
 			cout<<"Current segm: "<<mini<<endl;
 			speed=2;
-		//	Vector2D v1=p-points[mini];
-		//	Vector2D v2=points[mini+1]-points[mini];
-			Vector2D v3=points[mini+1]-p;
-		//	float sign=sgn((		Angle(v1.argument())	-	Angle(v2.argument())	).getValue());
-		//	rot=-2.7*sign*min;
-
-			double roll,pitch,yaw;
-			current.orientation.getRPY(roll,pitch,yaw);
-			rot=6.0*(Angle(v3.argument())-Angle(yaw)).getValue();
+			Vector2D v3=points[mini+1]-pose.position();
+			rot=6.0*Angle::difference(v3.argument(),pose.angle());
 		}
 
 	}
@@ -56,12 +45,6 @@ public:
 	}
 protected:
 	float speed,rot;
-	Transformation3D current;
 	Path2D path;
-	
-
-//	virtual void writeToStream(Stream& stream);
-//	virtual void readFromStream(Stream& stream);
 };
 
-//IMPLEMENT_MR_OBJECT(ReactiveControl);

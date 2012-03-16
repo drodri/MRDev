@@ -23,10 +23,8 @@ public:
 		path.push_back(Vector2D(0,0));
 		path.push_back(Vector2D(20,0));
 		path.push_back(Vector2D(20,10));
-		path.push_back(Vector2D(0,10));
-		path.push_back(Vector2D(0,1));
-		//path.push_back(Vector2D(0,15);
-
+		path.push_back(Vector2D(-1,10));
+		path.push_back(Vector2D(-1,1));
 		traj.setPath(path);
 	}
 	void Draw(void)
@@ -43,11 +41,17 @@ public:
 		robot->getOdometry(odom);
 		robot->getLaserData(laserData);
 
-		traj.setData(odom);
+		//The odometry is full 3D, lets handle it only in 2D, as a Pose (x, y, theta)
+		Transformation3D pose=odom.pose;
+		double roll,pitch,yaw;
+		pose.orientation.getRPY(roll,pitch,yaw);
+		Pose robotPose(pose.position.x,pose.position.y,yaw);
+
+		traj.setData(robotPose);
 		traj.getSpeed(va,vg);
 
 		control.setCommand(va,vg);
-		control.setData(odom,laserData);
+		control.setData(laserData);
 		float va2,vg2;
 		control.getSpeed(va2,vg2);	
 		robot->move(va2,vg2);
@@ -95,7 +99,6 @@ private:
 	MobileRobot* robot;
 	ReactiveControl control;
 	TrajControl traj;
-	
 };
 
 void printUsage();
