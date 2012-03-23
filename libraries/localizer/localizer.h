@@ -46,7 +46,7 @@ public:
 			Pose3D newPose;
 			base->setAbsoluteT3D(it->pose);
 			cout<<"Old loc: "<<base->getAbsoluteT3D();
-			if(base->computeGroundedLocation(newPose,&map))
+			if(base->dropWheeledBase(newPose,&map))
 			{
 				cout<<"New loc: "<<newPose;
 				it->pose=newPose;

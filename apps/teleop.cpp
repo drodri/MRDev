@@ -47,13 +47,13 @@ public:
 		pose.orientation.getRPY(roll,pitch,yaw);
 		Pose2D robotPose(pose.position.x,pose.position.y,yaw);
 
-		traj.setData(robotPose);
-		traj.getSpeed(va,vg);
+	//	traj.setData(robotPose);
+	//	traj.getSpeed(va,vg);
 
-		control.setCommand(va,vg);
-		control.setData(laserData);
-		float va2,vg2;
-		control.getSpeed(va2,vg2);	
+	//	control.setCommand(va,vg);
+	//	control.setData(laserData);
+		float va2=va,vg2=vg;
+	//	control.getSpeed(va2,vg2);	
 		robot->move(va2,vg2);
 	}
 	void Key(unsigned char key)
