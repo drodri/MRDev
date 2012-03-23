@@ -13,7 +13,7 @@ public:
 		path=p;
 		path.setColor(255,0,255);
 	}
-	void setData(const Pose& pose)
+	void setData(const Pose2D& pose)
 	{
 		vector<Vector2D> points=path.points;
 		float min=1000;

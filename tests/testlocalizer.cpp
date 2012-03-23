@@ -1,10 +1,8 @@
 #include "mrcore/mrcore.h"
 
-
+#include "localizer.h"
 #include <iostream>
 #include "glutapp.h"
-#include "reactivecontrol.h"
-#include "trajcontrol.h"
 
 using namespace mr;
 using namespace std;
@@ -12,26 +10,23 @@ using namespace std;
 class MyGlutApp: public GlutApp
 {
 public:
-	MyGlutApp(string name,MobileRobot* r):GlutApp(name),robot(r)
+	MyGlutApp(string name):GlutApp(name),localizer(100)
 	{
+		robot=new Neo();
+	//	robot->connectClients("127.0.0.1",13000);
 		world+=robot;
 		scene.addObject(&world);
 		scene.SetViewPoint(35,160,25);	
 		va=vg=0;
 
-		vector<Vector2D> path;
-		path.push_back(Vector2D(0,0));
-		path.push_back(Vector2D(20,0));
-		path.push_back(Vector2D(20,10));
-		path.push_back(Vector2D(-1,10));
-		path.push_back(Vector2D(-1,1));
-		traj.setPath(path);
+		localizer.loadMap("data/rampas.world");
+		Pose3D initPose(2,3,4);
+		localizer.initializeGaussian(initPose,0.2);
 	}
 	void Draw(void)
 	{
 		scene.Draw();
-		traj.drawGL();
-		control.drawGL();
+		localizer.drawGL();
 	}
 	void Timer(float time)
 	{
@@ -47,13 +42,9 @@ public:
 		pose.orientation.getRPY(roll,pitch,yaw);
 		Pose2D robotPose(pose.position.x,pose.position.y,yaw);
 
-		traj.setData(robotPose);
-		traj.getSpeed(va,vg);
-
-		control.setCommand(va,vg);
-		control.setData(laserData);
-		float va2,vg2;
-		control.getSpeed(va2,vg2);	
+		
+		float va2=0,vg2=0;
+		
 		robot->move(va2,vg2);
 	}
 	void Key(unsigned char key)
@@ -70,6 +61,7 @@ public:
 		{
 			va=vg=0;
 		}
+		scene.KeyDown(key);
 	}
 	void MouseMove(int x,int y)
 	{
@@ -97,35 +89,16 @@ private:
 	GLScene scene;
 	World world;
 	MobileRobot* robot;
-	ReactiveControl control;
-	TrajControl traj;
+	Localizer localizer;
 };
 
 void printUsage();
 
 int main(int argc,char* argv[])
 {
-/*	if(argc!=2)
-	{
-		printUsage();
-		return -1;
-	}
-	string configFile(argv[1]);
-
-	int port=-1;
-	if(robotname=="nemo")
-		robot=new Nemo;*/
-	MobileRobot* robot=new Neo();
-	robot->connectClients("127.0.0.1",13000);
-	MyGlutApp myApp("teleop",robot);
+	mrcoreInit();
+	MyGlutApp myApp("localizer");
 	myApp.Run();
 	return 0;   
 }
 
-void printUsage()
-{
-	cout<<"-------- Usage -----------------"<<endl;
-	cout<<"> teleop config.txt    "<<endl;
-	cout<<"example:    "<<endl;
-	cout<<"> teleop neo 127.0.0.1 13000    "<<endl;
-}

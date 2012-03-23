@@ -45,7 +45,7 @@ public:
 		Transformation3D pose=odom.pose;
 		double roll,pitch,yaw;
 		pose.orientation.getRPY(roll,pitch,yaw);
-		Pose2D robotPose(pose.position.x,pose.position.y,yaw);
+		Pose robotPose(pose.position.x,pose.position.y,yaw);
 
 		traj.setData(robotPose);
 		traj.getSpeed(va,vg);
