@@ -13,15 +13,16 @@ public:
 	MyGlutApp(string name):GlutApp(name),localizer(100)
 	{
 		robot=new Neo();
-	//	robot->connectClients("127.0.0.1",13000);
+		robot->connectClients("127.0.0.1",15000);
 		world+=robot;
 		scene.addObject(&world);
 		scene.SetViewPoint(35,160,25);	
 		va=vg=0;
 
 		localizer.loadMap("data/rampas.world");
-		Pose3D initPose(2,3,4);
-		localizer.initializeGaussian(initPose,0.2);
+		robot->setLocation(Pose3D(4,3,0,0,0,0));
+		Pose3D initPose(4,3,1);
+		localizer.initializeGaussian(initPose,0.05);
 	}
 	void Draw(void)
 	{
@@ -34,18 +35,19 @@ public:
 		LaserData laserData;
 
 		robot->getOdometry(odom);
+	//	cout<<"Odom: "<<odom<<endl;
 		robot->getLaserData(laserData);
 
 		//The odometry is full 3D, lets handle it only in 2D, as a Pose (x, y, theta)
-		Transformation3D pose=odom.pose;
-		double roll,pitch,yaw;
-		pose.orientation.getRPY(roll,pitch,yaw);
-		Pose2D robotPose(pose.position.x,pose.position.y,yaw);
-
+		localizer.move(odom,0.01);
 		
-		float va2=0,vg2=0;
+		localizer.resample();
+		float va2=va,vg2=vg;
 		
 		robot->move(va2,vg2);
+		Pose3D realPose=localizer.getEstimatedPose();
+	//	cout<<"RealPose: "<<realPose<<endl;
+		robot->setLocation(realPose);
 	}
 	void Key(unsigned char key)
 	{
