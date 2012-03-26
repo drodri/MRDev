@@ -96,8 +96,11 @@ public:
 			Pose3D newPose=particles[i].pose;
 
 			base->setAbsoluteT3D(oldPose);
+			cout<<"Old: "<<oldPose;
+			cout<<"New: "<<newPose;
 			if(base->computeGroundedLocation(newPose,&map))
 			{
+				cout<<"Grounded: "<<newPose;
 			//	cout<<"Old pose: "<<particles[i].pose<<endl;
 			//	cout<<"New pose: "<<newPose<<endl;
 				particles[i].pose=newPose;
@@ -107,9 +110,11 @@ public:
 				{
 					//FIXME: check why collide with ramps
 				//	particles[i].weight*=0.9;
+
 				//	cout<<"P: "<<i<<" collide "<<base->getClassName()<<endl;
 					particles[i].pose=oldPose;
 					particles[i].weight*= (1.0- inc.position.module()/0.5);
+					cout<<"P: "<<i<<" collide "<<base->getClassName()<<endl;
 				}
 			}
 			else
@@ -170,5 +175,4 @@ public:
 private:
 	vector<Particle> particles;
 	World map;
-
 };

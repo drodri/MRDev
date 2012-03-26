@@ -10,7 +10,7 @@ using namespace std;
 class MyGlutApp: public GlutApp
 {
 public:
-	MyGlutApp(string name):GlutApp(name),localizer(100)
+	MyGlutApp(string name):GlutApp(name),localizer(1)
 	{
 		robot=new Neo();
 		robot->connectClients("127.0.0.1",15000);
@@ -20,9 +20,9 @@ public:
 		va=vg=0;
 
 		localizer.loadMap("data/rampas.world");
-		robot->setLocation(Pose3D(4,3,0,0,0,0));
-		Pose3D initPose(4,3,1);
-		localizer.initializeGaussian(initPose,0.05);
+		Pose3D initPose(2.40036,6.554,0);
+		robot->setLocation(initPose);
+		localizer.initializeGaussian(initPose,0.0);
 	}
 	void Draw(void)
 	{
@@ -39,7 +39,7 @@ public:
 		robot->getLaserData(laserData);
 
 		//The odometry is full 3D, lets handle it only in 2D, as a Pose (x, y, theta)
-		localizer.move(odom,0.01);
+		localizer.move(odom,0.00);
 		
 		localizer.resample();
 		float va2=va,vg2=vg;
