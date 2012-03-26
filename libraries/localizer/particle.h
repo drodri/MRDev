@@ -27,9 +27,13 @@ public:
 			glBegin(GL_POINTS);
 				glVertex3f(0.,0.,0.);
 			glEnd();
+		//	offset.transformGL();
+		//	laser.drawGL();
 		glPopMatrix();
 	}
 //protected:
 	Pose3D pose;
 	double weight;
+//	LaserData laser;
+//	Pose3D offset;
 };

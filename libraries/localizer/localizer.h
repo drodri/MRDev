@@ -67,14 +67,21 @@ public:
 	}
 	void observe(const LaserData& laser)
 	{
-		Neo* base=new Neo(); //FIXME, select robot model as parameter
-		base->remove((*base)[5]);base->remove((*base)[4]);base->remove((*base)[3]);base->remove((*base)[2]);
+		LMS100Sim lms;
+		Pose3D offset(0.1,0,0.4,0,0,0);
+		vector<double> obs=laser.getRanges();
 		for(unsigned int i=0;i<particles.size();i++)
 		{
-			base->setAbsoluteT3D(particles[i].pose);
-			base->laser.simulate()
-		}
+			lms.setAbsoluteT3D(particles[i].pose*offset);
+			LaserData predict;
+			lms.updateSensorData(&map);
+			lms.getData(predict);
 
+			vector<double> pred=predict.getRanges();
+
+//			particles[i].laser=predict;
+//			particles[i].offset=offset;
+		}
 	}
 	void move(Odometry odom,double noise)
 	{
