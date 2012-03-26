@@ -113,6 +113,7 @@ double sampleGaussian(double mean,double cov)
 		med+=rand()/(float)RAND_MAX;
 
 	med-=6;//standard
+	
 	double x=mean+med*sqrt(cov);
 	return x;
 }

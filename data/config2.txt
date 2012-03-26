@@ -1,0 +1,7 @@
+world: rampas.world
+robots: 1
+neo 15000 2.4 7 0
+persons: 0
+noname  1.8 4 -4 0.1
+noname  1.2 5 1 0.1
+noname  1.6 9 9 0.1
