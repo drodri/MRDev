@@ -10,7 +10,7 @@ using namespace std;
 class MyGlutApp: public GlutApp
 {
 public:
-	MyGlutApp(string name):GlutApp(name),localizer(100)
+	MyGlutApp(string name):GlutApp(name),localizer(200)
 	{
 		robot=new Neo();
 		robot->connectClients("127.0.0.1",15000);
@@ -20,9 +20,9 @@ public:
 		va=vg=0;
 
 		localizer.loadMap("data/rampas.world");
-		Pose3D initPose(2.4,7,0);
+		Pose3D initPose(3,6,0);
 		robot->setLocation(initPose);
-		localizer.initializeGaussian(initPose,0.05);
+		localizer.initializeGaussian(initPose,0.1);
 	}
 	void Draw(void)
 	{
@@ -34,11 +34,24 @@ public:
 		Odometry odom;
 		LaserData laserData;
 
-		robot->getOdometry(odom);
-		localizer.move(odom,0.00);
+		if(robot->getOdometry(odom))
+		{
+			localizer.setGroundTruth(odom.pose);
+			static Pose3D last=odom.pose;
+			Pose3D inc=last.inverted()*odom.pose;
+			last=odom.pose;
+			double r,p,y;
+			inc.orientation.getRPY(r,p,y);
+			
+			double noise=0.1;
+			Pose3D noisePose(inc.position.x*sampleGaussian(0,noise),inc.position.y*sampleGaussian(0,noise),0,
+							 0,0,y*sampleGaussian(0,noise));
+			odom.pose*=noisePose;
+			localizer.move(odom,0.1);
+		}
 	
-		robot->getLaserData(laserData);
-		localizer.observe(laserData);
+		if(robot->getLaserData(laserData))
+			localizer.observe(laserData);
 		
 		localizer.resample();
 		float va2=va,vg2=vg;

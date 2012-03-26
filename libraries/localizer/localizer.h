@@ -39,6 +39,7 @@ public:
 		}
 		computeGroundLocations();
 		resample();
+		odomPose=initPose;
 	}
 	void computeGroundLocations()
 	{
@@ -64,12 +65,15 @@ public:
 		map.drawGL();
 		for(unsigned int i=0;i<particles.size();i++)
 			particles[i].drawGL();
+
+		odomPose.drawGL();
 	}
 	void observe(const LaserData& laser)
 	{
 		LMS100Sim lms;
 		Pose3D offset(0.1,0,0.4,0,0,0);
 		vector<double> obs=laser.getRanges();
+		cout<<"Particles-------------------------------------------------------"<<endl;
 		for(unsigned int i=0;i<particles.size();i++)
 		{
 			lms.setAbsoluteT3D(particles[i].pose*offset);
@@ -78,7 +82,14 @@ public:
 			lms.getData(predict);
 
 			vector<double> pred=predict.getRanges();
-
+			assert(pred.size()==obs.size());
+			for(unsigned int j=0;j<pred.size();j++)
+			{
+				double diff=fabs(obs[j]-pred[j])/predict.getMaxRange();
+			//	cout<<obs[j]<<" ... "<<pred[j]<<" Diff: "<<diff<<endl;
+				particles[i].weight*=(1-diff);
+			}
+			cout<<"W: "<<particles[i].weight<<" E: "<<(ground.inverted()*particles[i].pose).position.module()<<endl;
 //			particles[i].laser=predict;
 //			particles[i].offset=offset;
 		}
@@ -91,6 +102,7 @@ public:
 		static Pose3D lastOdom=odom.pose;
 		Pose3D inc=lastOdom.inverted()*odom.pose;
 		lastOdom=odom.pose;
+		odomPose*=inc;
 		for(unsigned int i=0;i<particles.size();i++)
 		{
 			Pose3D oldPose=particles[i].pose;
@@ -103,11 +115,11 @@ public:
 			Pose3D newPose=particles[i].pose;
 
 			base->setAbsoluteT3D(oldPose);
-			cout<<"Old: "<<oldPose;
-			cout<<"New: "<<newPose;
+		//	cout<<"Old: "<<oldPose;
+		//	cout<<"New: "<<newPose;
 			if(base->computeGroundedLocation(newPose,&map))
 			{
-				cout<<"Grounded: "<<newPose;
+		//		cout<<"Grounded: "<<newPose;
 			//	cout<<"Old pose: "<<particles[i].pose<<endl;
 			//	cout<<"New pose: "<<newPose<<endl;
 				particles[i].pose=newPose;
@@ -121,7 +133,7 @@ public:
 				//	cout<<"P: "<<i<<" collide "<<base->getClassName()<<endl;
 					particles[i].pose=oldPose;
 					particles[i].weight*= (1.0- inc.position.module()/0.5);
-					cout<<"P: "<<i<<" collide "<<base->getClassName()<<endl;
+				//	cout<<"P: "<<i<<" collide "<<base->getClassName()<<endl;
 				}
 			}
 			else
@@ -136,11 +148,9 @@ public:
 		int num=particles.size();
 		vector<double> accum(num);
 		double total=0;
-		cout<<"W: "<<endl;
 		for(unsigned int i=0;i<num;i++)
 		{
 			double w=particles[i].weight;
-			cout<<w<<endl;
 			accum[i]=total+w;
 			total=accum[i];
 		}
@@ -178,8 +188,10 @@ public:
 		result.orientation.setRPY(r,p,y);
 		return result;
 	}
-	
+	void setGroundTruth(Pose3D g){ground=g;}
 private:
 	vector<Particle> particles;
 	World map;
+	Pose3D odomPose;
+	Pose3D ground;
 };
