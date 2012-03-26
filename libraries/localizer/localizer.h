@@ -65,9 +65,22 @@ public:
 		for(unsigned int i=0;i<particles.size();i++)
 			particles[i].drawGL();
 	}
+	void observe(const LaserData& laser)
+	{
+		Neo* base=new Neo(); //FIXME, select robot model as parameter
+		base->remove((*base)[5]);base->remove((*base)[4]);base->remove((*base)[3]);base->remove((*base)[2]);
+		for(unsigned int i=0;i<particles.size();i++)
+		{
+			base->setAbsoluteT3D(particles[i].pose);
+			base->laser.simulate()
+		}
+
+	}
 	void move(Odometry odom,double noise)
 	{
 		WheeledBaseSim* base=new Pioneer3ATSim(); //FIXME, select robot model as parameter
+		base->remove((*base)[5]);base->remove((*base)[4]);base->remove((*base)[3]);base->remove((*base)[2]);
+		
 		static Pose3D lastOdom=odom.pose;
 		Pose3D inc=lastOdom.inverted()*odom.pose;
 		lastOdom=odom.pose;
@@ -89,12 +102,14 @@ public:
 			//	cout<<"New pose: "<<newPose<<endl;
 				particles[i].pose=newPose;
 				base->setAbsoluteT3D(newPose);
+
 				if(map.checkCollisionWith(*base))
 				{
 					//FIXME: check why collide with ramps
 				//	particles[i].weight*=0.9;
-					cout<<"P: "<<i<<" collide "<<base->getClassName()<<endl;
-				//	particles[i].pose=oldPose;
+				//	cout<<"P: "<<i<<" collide "<<base->getClassName()<<endl;
+					particles[i].pose=oldPose;
+					particles[i].weight*= (1.0- inc.position.module()/0.5);
 				}
 			}
 			else
@@ -109,9 +124,11 @@ public:
 		int num=particles.size();
 		vector<double> accum(num);
 		double total=0;
+		cout<<"W: "<<endl;
 		for(unsigned int i=0;i<num;i++)
 		{
 			double w=particles[i].weight;
+			cout<<w<<endl;
 			accum[i]=total+w;
 			total=accum[i];
 		}
