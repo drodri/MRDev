@@ -13,7 +13,12 @@ public:
 	MyGlutApp(string name):GlutApp(name),localizer(200)
 	{
 		robot=new Neo();
-		robot->connectClients("127.0.0.1",15000);
+		robot->connectClients("127.0.0.1",15000);	
+	//	if(!datalog.open("log/localizer"))
+	//		LOG_ERROR("Unable to open log");
+	//	else
+	//		robot->startLogging(datalog);
+	//	robot->connectLog("log/localizer");
 	//	world+=robot;
 		scene.addObject(&world);
 		scene.SetViewPoint(35,160,25);	
@@ -37,19 +42,27 @@ public:
 
 		if(robot->getOdometry(odom))
 		{
+			Pose3D real;
+			robot->getPose3D(real);
 			static Pose3D last=odom.pose;
 			static Odometry odomNoise=odom;
 			Pose3D inc=last.inverted()*odom.pose;
 			last=odom.pose;
 			double r,p,y;
 			inc.orientation.getRPY(r,p,y);
-			double noise=0.1;
-			Pose3D noisePose(inc.position.x*sampleGaussian(0,noise),inc.position.y*sampleGaussian(0,noise),0,
-							 0,0,y*sampleGaussian(0,noise));
+			double noise=0.01;
+			double m=inc.module();
+			Pose3D noisePose(m*sampleGaussian(0,noise),m*sampleGaussian(0,noise),0,
+							 0,0,m*sampleGaussian(0,noise));
+
+			if(rand()%200==0)
+			noisePose=Pose3D (0,0.5,0,
+							  0,0,0);
+
 			
 			odomNoise.pose*=inc;
 			odomNoise.pose*=noisePose;
-			localizer.move(odomNoise,0.01,&odom);
+			localizer.move(odomNoise,noise*2,&real);
 		}
 	
 		if(robot->getLaserData(laserData))
@@ -132,6 +145,7 @@ private:
 	World world;
 	MobileRobot* robot;
 	Localizer localizer;
+	DataLogOut datalog;
 };
 
 void printUsage();

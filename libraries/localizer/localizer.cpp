@@ -9,9 +9,10 @@ void Localizer::drawGL(void)
 	odomPose.drawGL();
 
 	glPushMatrix();
-	odomTraj.drawGL();
-	glTranslatef(0,0,0.1);
 	groundTraj.drawGL();
+	glTranslatef(0,0,0.1);
+	odomTraj.drawGL();
+
 	glTranslatef(0,0,0.1);
 	filterTraj.drawGL();
 	glPopMatrix();
@@ -108,6 +109,8 @@ void Localizer::observe(const LaserData& laser)
 	double nef=neff();
 	if(nef<particles.size()/2)
 		resample();
+
+
 }
 void Localizer::normalizeWeights()
 {
@@ -120,7 +123,7 @@ void Localizer::normalizeWeights()
 	for(unsigned int i=0;i<particles.size();i++)
 		particles[i].weight/=max;
 }
-void Localizer::move(Odometry odom,double noise,Odometry* groundTruth)
+void Localizer::move(Odometry odom,double noise,Pose3D* groundTruth)
 {
 	WheeledBaseSim* base=new Pioneer3ATSim(); //FIXME, select robot model as parameter
 	base->remove((*base)[5]);base->remove((*base)[4]);base->remove((*base)[3]);base->remove((*base)[2]);
@@ -133,7 +136,7 @@ void Localizer::move(Odometry odom,double noise,Odometry* groundTruth)
 
 	if(groundTruth)
 	{
-		ground=(*groundTruth).pose;
+		ground=(*groundTruth);
 		groundTraj.push_back(ground.position);
 	}
 	for(unsigned int i=0;i<particles.size();i++)
@@ -142,8 +145,9 @@ void Localizer::move(Odometry odom,double noise,Odometry* groundTruth)
 		particles[i].pose*=inc;
 		double r,p,y;
 		inc.orientation.getRPY(r,p,y);
-		Pose3D noisePose(inc.position.x*sampleGaussian(0,noise),inc.position.y*sampleGaussian(0,noise),inc.position.z*sampleGaussian(0,noise),
-						r*sampleGaussian(0,noise),p*sampleGaussian(0,noise),y*sampleGaussian(0,noise));
+		double d=inc.module();
+		Pose3D noisePose(d*sampleGaussian(0,noise),d*sampleGaussian(0,noise),d*sampleGaussian(0,noise),
+						d*sampleGaussian(0,noise),d*sampleGaussian(0,noise),d*sampleGaussian(0,noise));
 		particles[i].pose*=noisePose;
 		Pose3D newPose=particles[i].pose;
 
@@ -175,6 +179,7 @@ void Localizer::move(Odometry odom,double noise,Odometry* groundTruth)
 		}
 	}
 	delete base;
+	computeEstimatedPose();
 }
 double Localizer::neff()
 {
@@ -200,6 +205,7 @@ void Localizer::resample() //systematic
 	}
 	double step=total/num;
 	double init=step*(rand()/(double)RAND_MAX);
+//	cout<<"Step: "<<step<<" init "<<init<<endl;
 	int current=0;
 	vector<Particle> aux(num);
 	for(unsigned int i=0;i<num;i++)
@@ -209,18 +215,24 @@ void Localizer::resample() //systematic
 		while(v>accum[current])
 			current++;
 
+	//	cout<<current<<" ";
 		aux[i]=particles[current];
 		aux[i].weight=1;
 	}
+	cout<<endl;
 	particles=aux;
+	computeEstimatedPose();
 }
-Pose3D Localizer::getEstimatedPose()
+void Localizer::computeEstimatedPose()
 {
 	Vector3D average;
 	vector<double> roll,pitch,yaw;
 	double r,p,y;
+	double max=0;int maxi=-1;
 	for(unsigned int i=0;i<particles.size();i++)
 	{
+		double w=particles[i].weight;
+		if(max<w){max=w;maxi=i;}
 		average+=particles[i].pose.position;		
 		particles[i].pose.orientation.getRPY(r,p,y);
 		roll.push_back(r);pitch.push_back(p);yaw.push_back(y);
@@ -231,7 +243,8 @@ Pose3D Localizer::getEstimatedPose()
 	Pose3D result(average/particles.size());
 	result.orientation.setRPY(r,p,y);
 
+	estimatedPose=result;
+	//if(maxi!=-1)
+	//	estimatedPose=particles[maxi].pose;
 	filterTraj.push_back(result.position);
-
-	return result;
 }
