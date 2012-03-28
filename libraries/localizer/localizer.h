@@ -22,10 +22,11 @@ public:
 	bool loadMap(string filename);
 	void initializeGaussian(Pose3D initPose,double noise);
 	void observe(const LaserData& laser);
-	void move(Odometry odom,double noise,Odometry* groundTruth);
-	Pose3D getEstimatedPose();
+	void move(Odometry odom,double noise,Pose3D* groundTruth);
+	Pose3D getEstimatedPose(){return estimatedPose;}
 	
-//private:
+private:
+	void computeEstimatedPose();
 	void computeGroundLocations();
 	void normalizeWeights();
 	void resample() ;//systematic
@@ -33,6 +34,7 @@ public:
 	vector<Particle> particles;
 	World map;
 	Pose3D odomPose;
+	Pose3D estimatedPose;
 	Pose3D ground;
 	Path3D odomTraj,groundTraj,filterTraj;
 };
