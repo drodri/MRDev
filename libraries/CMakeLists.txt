@@ -10,7 +10,7 @@ SET(curdir ${CMAKE_CURRENT_SOURCE_DIR})
 
 FILE(GLOB children RELATIVE ${curdir} ${curdir}/*)
 FOREACH(child ${children})
-IF(IS_DIRECTORY ${curdir}/${child})
+IF(IS_DIRECTORY ${curdir}/${child} AND NOT ${child} STREQUAL "CMakeFiles")
     ADD_SUBDIRECTORY( ${child} )
 ENDIF()
 ENDFOREACH()
