@@ -30,7 +30,7 @@ public:
 			//cout<<"Obstacle at: "<<angles[mini].getValue()<<" min: "<<min<<endl;
 			//cout<<"Command: "<<speed<<" "<<rot<<endl;
 			//cout<<"Obstacle at: "<<angles[mini].getValue()<<" min: "<<min<<endl;
-			if(speed>0)speed*=max(min-0.45,0);
+			if(speed>0)speed*=max(min-0.45,0.0);
 			float Krot=91*DEG2RAD-fabs(angles[mini].getValue());
 			rot=-Krot*sgn(angles[mini].getValue());
 			//cout<<"Control: "<<speed<<" "<<rot<<endl;
