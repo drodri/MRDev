@@ -25,9 +25,9 @@ public:
 		va=vg=0;
 
 		localizer.loadMap("data/rampas.world");
-		Pose3D initPose(2.4,7,0);
+		Pose3D initPose(2.4,8,0);
 		robot->setLocation(initPose);
-		localizer.initializeGaussian(initPose,0.1);
+		localizer.initializeGaussian(initPose,0.2);
 	}
 	void Draw(void)
 	{
@@ -37,6 +37,7 @@ public:
 	}
 	void Timer(float time)
 	{
+		return;
 		Odometry odom;
 		LaserData laserData;
 
@@ -55,9 +56,9 @@ public:
 			Pose3D noisePose(m*sampleGaussian(0,noise),m*sampleGaussian(0,noise),0,
 							 0,0,m*sampleGaussian(0,noise));
 
-			if(rand()%200==0)
-			noisePose=Pose3D (0,0.5,0,
-							  0,0,0);
+		//	if(rand()%200==0)
+		//	noisePose=Pose3D (0,0.5,0,
+		//					  0,0,0);
 
 			
 			odomNoise.pose*=inc;
@@ -77,17 +78,12 @@ public:
 	}
 	void Key(unsigned char key)
 	{
-		/*if(key=='l')
+		if(key=='l')
 		{
-			LMS100Sim lms;
-			Pose3D offset(0.1,0,0.4,0,0,0);
-			Pose3D initPose(5,6,0);
-			lms.setAbsoluteT3D(initPose*offset);
-			LaserData predict;
-			lms.updateSensorData(&localizer.map);
-			lms.getData(predict);
-			localizer.observe(predict);
-		}
+			LaserData laserData;
+			if(robot->getLaserData(laserData))
+				localizer.observe(laserData);
+		}/*
 		if(key=='p')
 		{
 			static Pose3D last=Pose3D(5,6,0);

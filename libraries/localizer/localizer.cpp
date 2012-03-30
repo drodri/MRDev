@@ -6,7 +6,14 @@ void Localizer::drawGL(void)
 	for(unsigned int i=0;i<particles.size();i++)
 		particles[i].drawGL();
 
-	odomPose.drawGL();
+	estimatedPose.drawGL();
+	glPushMatrix();
+		estimatedPose.transformGL();
+		offset.transformGL();
+		laserD.drawGL();
+	glPopMatrix();
+
+	//odomPose.drawGL();
 
 	glPushMatrix();
 	groundTraj.drawGL();
@@ -78,7 +85,7 @@ void Localizer::computeGroundLocations()
 void Localizer::observe(const LaserData& laser)
 {
 	LMS100Sim lms;
-	Pose3D offset(0.1,0,0.4,0,0,0);
+	laserD=laser;
 	vector<double> obs=laser.getRanges();
 	cout<<"Particles-------------------------------------------------------"<<endl;
 	for(unsigned int i=0;i<particles.size();i++)
@@ -98,6 +105,7 @@ void Localizer::observe(const LaserData& laser)
 		//	cout<<obs[j]<<" ... "<<pred[j]<<" Diff: "<<diff<<endl;
 		}
 		particles[i].weight*=(1-error/(predict.size()*2.0));
+		cout<<"W: "<<particles[i].weight<<endl;
 
 		if(particles[i].weight<0)particles[i].weight=0;
 //		cout<<"W: "<<particles[i].weight<<" E: "<<error<<" F: "<<(1-error/(predict.size()*1.0))<<endl;
