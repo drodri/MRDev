@@ -97,14 +97,20 @@ void Localizer::observe(const LaserData& laser)
 
 		vector<double> pred=predict.getRanges();
 		assert(pred.size()==obs.size());
-		double error=0;
+		double error=1;
+		double maxRange=laser.getMaxRange();
+		double stdsqrt2=sqrt(2.0)*0.1;//FIXME: replace with laser.getSigma();
+		double maxLog;
 		for(unsigned int j=0;j<pred.size();j++)
 		{
-			double diff=fabs(obs[j]-pred[j]);
-			error+=diff;
+			double diff=min(2, fabs(obs[j]-pred[j]))/stdsqrt2;
+			diff*=diff;//square
+			double W=0.1/maxRange+0.9*exp(-diff);
+			error+=log(W);
 		//	cout<<obs[j]<<" ... "<<pred[j]<<" Diff: "<<diff<<endl;
 		}
-		particles[i].weight*=(1-error/(predict.size()*2.0));
+		//particles[i].weight*=(1-error/(predict.size()*2.0));
+		particles[i].weight*=exp(error-maxlog);
 		cout<<"W: "<<particles[i].weight<<endl;
 
 		if(particles[i].weight<0)particles[i].weight=0;
