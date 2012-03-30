@@ -1,5 +1,4 @@
 #include "mrcore/mrcore.h"
-#include "gl/glut.h"
 #include <iostream>
 
 using namespace mr;
@@ -25,7 +24,10 @@ public:
 
 			glPointSize(3);
 			glColor3f(weight*255,weight*255,0);
-			glutSolidSphere(.02,8,8);
+			//glutSolidSphere(.02,8,8);
+			GLUquadric* quad =gluNewQuadric();
+			gluSphere	(quad , 0.02,8,8);
+			gluDeleteQuadric(quad);
 			glBegin(GL_POINTS);
 				glVertex3f(0.,0.,0.);
 			glEnd();
