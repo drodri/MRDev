@@ -12,6 +12,8 @@ MESSAGE(STATUS "Default install directory is: " ${CMAKE_INSTALL_PREFIX})
 find_path(	MRCORE_DIR include/mrcore/mrcore.h  ${CMAKE_INSTALL_PREFIX} )
 
 INCLUDE_DIRECTORIES(${MRCORE_DIR}/include)
+INCLUDE_DIRECTORIES(${MRCORE_DIR}/include/mrcore)
+MESSAGE (STATUS "MRCore include folder is "${MRCORE_DIR}/include)
 LINK_DIRECTORIES(${MRCORE_DIR}/lib)
 
 
