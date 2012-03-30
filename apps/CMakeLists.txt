@@ -10,6 +10,7 @@ IF(WIN32)
 	TARGET_LINK_LIBRARIES(teleop optimized mrcore freeglut_static)
 ELSE(WIN32) #LINUX	
 	TARGET_LINK_LIBRARIES(simulator mrcore ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} )
+	TARGET_LINK_LIBRARIES(teleop mrcore ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} )
 ENDIF(WIN32)
 		
 ##################################
