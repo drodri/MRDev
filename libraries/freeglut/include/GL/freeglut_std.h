@@ -119,8 +119,13 @@
 /*
  * Always include OpenGL and GLU headers
  */
+ #ifdef WIN32
 #include <gl/gl.h> 
 #include <gl/glu.h> 
+#else     
+#include <GL/gl.h>
+#include <GL/glu.h>
+#endif  
 
 /*
  * GLUT API macro definitions -- the special key codes:
