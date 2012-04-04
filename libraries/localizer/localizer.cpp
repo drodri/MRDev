@@ -1,5 +1,5 @@
 #include "localizer.h"
-
+#include <float.h>
 void Localizer::drawGL(void)
 {
 	map.drawGL();
@@ -81,7 +81,24 @@ void Localizer::computeGroundLocations()
 	}
 	delete base;
 }
-	
+void Localizer::log2linearWeights( )
+{
+	double max=-DBL_MAX;int maxi=-1;
+	for(unsigned int i=0;i<particles.size();i++)
+	{
+		double w=particles[i].weight;
+		if(max<w){max=w;maxi=i;}
+	}
+	double sumW = 0;
+	for (size_t i=0;i<particles.size();i++)
+		sumW += particles[i].weight = exp( particles[i].weight -max);
+
+	for (size_t i=0;i<particles.size();i++)
+	{
+		particles[i].weight/= sumW;
+	cout<<particles[i].weight<<endl;
+	}
+}	
 void Localizer::observe(const LaserData& laser)
 {
 	LMS100Sim lms;
@@ -103,6 +120,7 @@ void Localizer::observe(const LaserData& laser)
 		double maxLog;
 		for(unsigned int j=0;j<pred.size();j++)
 		{
+			if(obs[j]>=maxRange-1)continue;
 			double diff=min(2, fabs(obs[j]-pred[j]))/stdsqrt2;
 			diff*=diff;//square
 			double W=0.1/maxRange+0.9*exp(-diff);
@@ -110,19 +128,19 @@ void Localizer::observe(const LaserData& laser)
 		//	cout<<obs[j]<<" ... "<<pred[j]<<" Diff: "<<diff<<endl;
 		}
 		//particles[i].weight*=(1-error/(predict.size()*2.0));
-		particles[i].weight*=exp(error-maxlog);
-		cout<<"W: "<<particles[i].weight<<endl;
+		particles[i].weight+=error;
+//		cout<<"W: "<<particles[i].weight<<endl;
 
-		if(particles[i].weight<0)particles[i].weight=0;
+//		if(particles[i].weight<0)particles[i].weight=0;
 //		cout<<"W: "<<particles[i].weight<<" E: "<<error<<" F: "<<(1-error/(predict.size()*1.0))<<endl;
 		//cout<<"W: "<<particles[i].weight<<" E: "<<(ground.inverted()*particles[i].pose).position.module()<<endl;
 //			particles[i].laser=predict;
 //			particles[i].offset=offset;
 	}
-	normalizeWeights();
+	log2linearWeights( );
 	double nef=neff();
-	if(nef<particles.size()/2)
-		resample();
+	//if(nef<particles.size()/2)
+//		resample();
 
 
 }
@@ -197,14 +215,13 @@ void Localizer::move(Odometry odom,double noise,Pose3D* groundTruth)
 }
 double Localizer::neff()
 {
-	double neff=0,sum=0;
+	double neff=0;
 	for(unsigned int i=0;i<particles.size();i++)
 	{
-		sum+=particles[i].weight;
 		neff+=particles[i].weight*particles[i].weight;
 	}
 
-	return sum*sum/neff;
+	return 1.0/neff;
 }
 void Localizer::resample() //systematic
 {

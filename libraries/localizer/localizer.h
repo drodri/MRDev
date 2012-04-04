@@ -28,6 +28,7 @@ public:
 	Pose3D getEstimatedPose(){return estimatedPose;}
 	
 private:
+	void log2linearWeights( );
 	void computeEstimatedPose();
 	void computeGroundLocations();
 	void normalizeWeights();
