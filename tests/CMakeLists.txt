@@ -11,8 +11,8 @@ IF(WIN32)
 	TARGET_LINK_LIBRARIES(worldTest debug mrcore_d objects freeglut_static)
 	TARGET_LINK_LIBRARIES(worldTest optimized mrcore objects freeglut_static)
 ELSE(WIN32) #LINUX		
-	TARGET_LINK_LIBRARIES(localizerTest debug mrcore_d localizer ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
-	TARGET_LINK_LIBRARIES(worldTest mrcore ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} )
+	TARGET_LINK_LIBRARIES(localizerTest mrcore localizer ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
+	TARGET_LINK_LIBRARIES(worldTest mrcore objects ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} )
 ENDIF(WIN32)
 		
 	
