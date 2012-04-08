@@ -24,6 +24,14 @@ void Localizer::drawGL(void)
 	filterTraj.drawGL();
 	glPopMatrix();
 }
+void Localizer::printInfo()
+{
+	for(unsigned int i=0;i<particles.size();i++)
+	{
+		double dist=(Pose3D(2.4,7,0).inverted()*particles[i].pose).module();
+		LOG_INFO("W: "<<particles[i].weight<<" pose: "<<particles[i].pose<<" dist: "<<dist);
+	}
+}
 bool Localizer::loadMap(string filename)
 {
 	StreamFile worldFile(filename,true);
@@ -35,7 +43,18 @@ bool Localizer::loadMap(string filename)
 	map.readFromStream(worldFile);
 	return true;
 }
-
+void Localizer::computeDrawWeights()
+{
+	double max=0;
+	for(unsigned int i=0;i<particles.size();i++)
+	{
+		if(max<particles[i].weight)
+			max=particles[i].weight;
+	}
+//	LOG_INFO("Max: "<<max);
+	for(unsigned int i=0;i<particles.size();i++)
+		particles[i].drawWeight=particles[i].weight/max;
+}
 void Localizer::initializeGaussian(Pose3D initPose,double noise)
 {
 	odomPose=initPose;
@@ -45,19 +64,21 @@ void Localizer::initializeGaussian(Pose3D initPose,double noise)
 	while(num<particles.size() && cont<particles.size()*100)
 	{
 		cont++;
-		Pose3D noisePose(sampleGaussian(0,noise),sampleGaussian(0,noise),sampleGaussian(0,noise),
-						sampleGaussian(0,noise),sampleGaussian(0,noise),sampleGaussian(0,noise));
 	//	Pose3D noisePose(sampleGaussian(0,noise),sampleGaussian(0,noise),sampleGaussian(0,noise),
-	//					sampleGaussian(0,0),sampleGaussian(0,0),sampleGaussian(0,0));
+	//					sampleGaussian(0,noise),sampleGaussian(0,noise),sampleGaussian(0,noise));
+		Pose3D noisePose(sampleGaussian(0,noise),sampleGaussian(0,noise),sampleGaussian(0,noise),
+						sampleGaussian(0,0),sampleGaussian(0,0),sampleGaussian(0,0));
 		Pose3D p=initPose*noisePose;
 		base->setAbsoluteT3D(p);
 		if(base->dropWheeledBase(p,&map))
 		{
 			particles[num].pose=p;
-			particles[num].weight=1.0;
+			particles[num].weight=1.0;//weights
 			num++;
 		}
 	}
+	normalizeWeights();
+	computeDrawWeights();
 	delete base;
 	if(num<particles.size())
 		LOG_ERROR("unable to generate particles with given init pose");
@@ -101,34 +122,41 @@ void Localizer::log2linearWeights( )
 }	
 void Localizer::observe(const LaserData& laser)
 {
+
 	LMS100Sim lms;
 	laserD=laser;
 	vector<double> obs=laser.getRanges();
 	cout<<"Particles-------------------------------------------------------"<<endl;
+	
+	vector<double> errors(particles.size(),1);
 	for(unsigned int i=0;i<particles.size();i++)
 	{
 		lms.setAbsoluteT3D(particles[i].pose*offset);
 		LaserData predict;
 		lms.updateSensorData(&map);
 		lms.getData(predict);
+	//	particles[i].offset=offset;
+	//	particles[i].laser=predict;
 
 		vector<double> pred=predict.getRanges();
 		assert(pred.size()==obs.size());
-		double error=1;
 		double maxRange=laser.getMaxRange();
-		double stdsqrt2=sqrt(2.0)*0.1;//FIXME: replace with laser.getSigma();
-		double maxLog;
-		for(unsigned int j=0;j<pred.size();j++)
+		double stdsqrt2=sqrt(2.0)*10.0f;//FIXME: replace with laser.getSigma();
+		for(unsigned int j=0;j<pred.size();j++) 
 		{
 			if(obs[j]>=maxRange-1)continue;
 			double diff=min(2, fabs(obs[j]-pred[j]))/stdsqrt2;
 			diff*=diff;//square
-			double W=0.1/maxRange+0.9*exp(-diff);
-			error+=log(W);
-		//	cout<<obs[j]<<" ... "<<pred[j]<<" Diff: "<<diff<<endl;
+		//	double W=0.1/maxRange+0.9*exp(-diff);
+			double W=-diff;
+		//	errors[i]+=log(W);
+			errors[i]+=W;
+		//	LOG_INFO("OBS: "<<j<<" values: "<<obs[j]<<" ... "<<pred[j]<<" W: "<<W<<" log: "<<log(W));
 		}
+		
 		//particles[i].weight*=(1-error/(predict.size()*2.0));
-		particles[i].weight+=error;
+	//	particles[i].weight*=exp(error);
+	//	LOG_INFO("Error: "<<errors[i]);
 //		cout<<"W: "<<particles[i].weight<<endl;
 
 //		if(particles[i].weight<0)particles[i].weight=0;
@@ -137,23 +165,37 @@ void Localizer::observe(const LaserData& laser)
 //			particles[i].laser=predict;
 //			particles[i].offset=offset;
 	}
-	log2linearWeights( );
+	double maxError=-DBL_MAX;
+	for(unsigned int i=0;i<particles.size();i++)
+	{
+		if(maxError<errors[i])
+			maxError=errors[i];
+	}
+//	LOG_INFO("MaxError: "<<maxError);
+	for(unsigned int i=0;i<particles.size();i++)
+	{
+		particles[i].weight*=exp(errors[i]-maxError);
+//		LOG_INFO("w: "<<particles[i].weight);
+	}
+//	log2linearWeights( );
+	normalizeWeights();
 	double nef=neff();
-	//if(nef<particles.size()/2)
-//		resample();
+	if(nef<particles.size()/2)
+		resample();
 
-
+	computeDrawWeights();
+//	printInfo();
 }
 void Localizer::normalizeWeights()
 {
-	double max=0;
+	double sum=0;
 	for(unsigned int i=0;i<particles.size();i++)
 	{
-		if(particles[i].weight>max)
-			max=particles[i].weight;
+		sum+=particles[i].weight;
 	}
+//	LOG_INFO("Sum: "<<sum);
 	for(unsigned int i=0;i<particles.size();i++)
-		particles[i].weight/=max;
+		particles[i].weight/=sum;
 }
 void Localizer::move(Odometry odom,double noise,Pose3D* groundTruth)
 {
@@ -225,6 +267,7 @@ double Localizer::neff()
 }
 void Localizer::resample() //systematic
 {
+	LOG_INFO("Resampling");
 	int num=particles.size();
 	vector<double> accum(num);
 	double total=0;
@@ -275,7 +318,7 @@ void Localizer::computeEstimatedPose()
 	result.orientation.setRPY(r,p,y);
 
 	estimatedPose=result;
-	//if(maxi!=-1)
-	//	estimatedPose=particles[maxi].pose;
+	if(maxi!=-1)
+		estimatedPose=particles[maxi].pose;
 	filterTraj.push_back(result.position);
 }

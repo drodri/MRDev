@@ -10,22 +10,24 @@ using namespace std;
 class MyGlutApp: public GlutApp
 {
 public:
-	MyGlutApp(string name):GlutApp(name),localizer(200)
+	MyGlutApp(string name):GlutApp(name),localizer(100)
 	{
 		robot=new Neo();
-		robot->connectClients("127.0.0.1",15000);	
+		robot->connectClients("127.0.0.1",13000);	
 	//	if(!datalog.open("log/localizer"))
 	//		LOG_ERROR("Unable to open log");
 	//	else
 	//		robot->startLogging(datalog);
 	//	robot->connectLog("log/localizer");
 	//	world+=robot;
-		scene.addObject(&world);
+	//	scene.addObject(&world);
 		scene.SetViewPoint(35,160,25);	
 		va=vg=0;
 
-		localizer.loadMap("data/rampas.world");
-		Pose3D initPose(2.4,8,0);
+	//	localizer.loadMap("data/rampas.world");
+		localizer.loadMap("data/controlTest.world");
+	//	Pose3D initPose(2.4,8,0);
+		Pose3D initPose(-7,-5,0);
 		robot->setLocation(initPose);
 		localizer.initializeGaussian(initPose,0.2);
 	}
@@ -37,7 +39,6 @@ public:
 	}
 	void Timer(float time)
 	{
-		return;
 		Odometry odom;
 		LaserData laserData;
 
@@ -56,14 +57,14 @@ public:
 			Pose3D noisePose(m*sampleGaussian(0,noise),m*sampleGaussian(0,noise),0,
 							 0,0,m*sampleGaussian(0,noise));
 
-		//	if(rand()%200==0)
+		//	if(rand()%100==0)
 		//	noisePose=Pose3D (0,0.5,0,
 		//					  0,0,0);
 
 			
 			odomNoise.pose*=inc;
 			odomNoise.pose*=noisePose;
-			localizer.move(odomNoise,noise*2,&real);
+			localizer.move(odomNoise,noise,&real);
 		}
 	
 		if(robot->getLaserData(laserData))
@@ -78,12 +79,12 @@ public:
 	}
 	void Key(unsigned char key)
 	{
-		if(key=='l')
+		/*if(key=='l')
 		{
 			LaserData laserData;
 			if(robot->getLaserData(laserData))
 				localizer.observe(laserData);
-		}/*
+		}
 		if(key=='p')
 		{
 			static Pose3D last=Pose3D(5,6,0);
@@ -149,6 +150,7 @@ void printUsage();
 int main(int argc,char* argv[])
 {
 	mrcoreInit();
+	Logger::SetFileStream("logLocalizer.txt");
 	MyGlutApp myApp("localizer");
 	myApp.Run();
 	return 0;   
