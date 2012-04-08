@@ -17,6 +17,7 @@ public:
 		odomTraj.setColor(255,0,0);
 		groundTraj.setColor(0,255,0);
 		filterTraj.setColor(0,0,255);
+		setOffset(Pose3D(0.1,0,0.4,0,0,0));
 	}
 	//(0.1,0,0.4,0,0,0) for Neo robot
 	void setOffset(Pose3D off){offset=off;}
@@ -28,6 +29,8 @@ public:
 	Pose3D getEstimatedPose(){return estimatedPose;}
 	
 private:
+	void printInfo();
+	void computeDrawWeights();
 	void log2linearWeights( );
 	void computeEstimatedPose();
 	void computeGroundLocations();

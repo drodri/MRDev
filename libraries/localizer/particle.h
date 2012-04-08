@@ -16,7 +16,7 @@ public:
 		glColor3f(255,0,0);
 		glPushMatrix();
 			pose.transformGL();
-			glTranslatef(0,0,weight);
+			glTranslatef(0,0,drawWeight);
 			glBegin(GL_LINES);
 				glVertex3f(0.,0.,0.);
 				glVertex3f(0.2,0.,0.);
@@ -31,13 +31,16 @@ public:
 			glBegin(GL_POINTS);
 				glVertex3f(0.,0.,0.);
 			glEnd();
-		//	offset.transformGL();
-		//	laser.drawGL();
+			offset.transformGL();
+			
+			laser.drawGLMode=4;
+			laser.drawGL();
 		glPopMatrix();
 	}
 //protected:
 	Pose3D pose;
 	double weight;
-//	LaserData laser;
-//	Pose3D offset;
+	double drawWeight;
+	LaserData laser;
+	Pose3D offset;
 };
