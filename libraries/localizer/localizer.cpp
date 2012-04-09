@@ -145,7 +145,7 @@ void Localizer::observe(const LaserData& laser)
 		for(unsigned int j=0;j<pred.size();j++) 
 		{
 			if(obs[j]>=maxRange-1)continue;
-			double diff=min(2, fabs(obs[j]-pred[j]))/stdsqrt2;
+			double diff=min(2.0, fabs(obs[j]-pred[j]))/stdsqrt2;
 			diff*=diff;//square
 		//	double W=0.1/maxRange+0.9*exp(-diff);
 			double W=-diff;
