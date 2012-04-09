@@ -61,7 +61,7 @@ void Localizer::initializeGaussian(Pose3D initPose,double noise)
 
 	WheeledBaseSim* base=new Pioneer3ATSim(); //FIXME, select robot model as parameter
 	int num=0,cont=0;
-	while(num<particles.size() && cont<particles.size()*100)
+	while(num<particles.size() && cont<particles.size()*1000)
 	{
 		cont++;
 	//	Pose3D noisePose(sampleGaussian(0,noise),sampleGaussian(0,noise),sampleGaussian(0,noise),

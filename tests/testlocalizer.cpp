@@ -14,17 +14,18 @@ public:
 	{
 		robot=new Neo();
 		robot->connectClients("127.0.0.1",15000);	
-		if(!datalog.open("log/localizer"))
-			LOG_ERROR("Unable to open log");
-		else
-			robot->startLogging("log/localizer");
+	//	if(!datalog.open("log/localizer"))
+	//		LOG_ERROR("Unable to open log");
+	//	else
+	//		robot->startLogging("log/localizer");
 	//	robot->connectLog("log/localizer");
 	//	world+=robot;
 	//	scene.addObject(&world);
 		scene.SetViewPoint(35,160,25);	
 		va=vg=0;
 
-		localizer.loadMap("data/squaredRoom.world");
+		localizer.loadMap("data/squaredRingNoWalls.world");
+	//	localizer.loadMap("data/squaredRoom.world");
 		Pose3D initPose(-2.4, -7, 0);
 	// localizer.loadMap("data/controlTest.world");
 	//	Pose3D initPose(2.4,8,0);
@@ -65,11 +66,11 @@ public:
 			
 			odomNoise.pose*=inc;
 			odomNoise.pose*=noisePose;
-			//localizer.move(odomNoise,noise*10,&real);
+			localizer.move(odomNoise,noise*10,&real);
 		}
 	
-		//if(robot->getLaserData(laserData))
-			//localizer.observe(laserData);
+		if(robot->getLaserData(laserData))
+			localizer.observe(laserData);
 		
 		float va2=va,vg2=vg;
 		robot->move(va2,vg2);
@@ -151,7 +152,7 @@ void printUsage();
 int main(int argc,char* argv[])
 {
 	mrcoreInit();
-	Logger::SetFileStream("logLocalizer.txt");
+//	Logger::SetFileStream("logLocalizer.txt");
 	MyGlutApp myApp("localizer");
 	myApp.Run();
 	return 0;   
