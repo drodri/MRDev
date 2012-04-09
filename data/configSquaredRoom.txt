@@ -1,4 +1,4 @@
-world: squared_room.world
+world: squaredRoom.world
 robots: 1
 neo 15000 -2.4 -7 0
 persons: 0
