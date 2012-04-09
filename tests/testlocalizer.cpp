@@ -13,21 +13,22 @@ public:
 	MyGlutApp(string name):GlutApp(name),localizer(100)
 	{
 		robot=new Neo();
-		robot->connectClients("127.0.0.1",13000);	
-	//	if(!datalog.open("log/localizer"))
-	//		LOG_ERROR("Unable to open log");
-	//	else
-	//		robot->startLogging(datalog);
+		robot->connectClients("127.0.0.1",15000);	
+		if(!datalog.open("log/localizer"))
+			LOG_ERROR("Unable to open log");
+		else
+			robot->startLogging("log/localizer");
 	//	robot->connectLog("log/localizer");
 	//	world+=robot;
 	//	scene.addObject(&world);
 		scene.SetViewPoint(35,160,25);	
 		va=vg=0;
 
-	//	localizer.loadMap("data/rampas.world");
-		localizer.loadMap("data/controlTest.world");
+		localizer.loadMap("data/squaredRoom.world");
+		Pose3D initPose(-2.4, -7, 0);
+	// localizer.loadMap("data/controlTest.world");
 	//	Pose3D initPose(2.4,8,0);
-		Pose3D initPose(-7,-5,0);
+	//	Pose3D initPose(-7,-5,0);
 		robot->setLocation(initPose);
 		localizer.initializeGaussian(initPose,0.2);
 	}
@@ -57,25 +58,25 @@ public:
 			Pose3D noisePose(m*sampleGaussian(0,noise),m*sampleGaussian(0,noise),0,
 							 0,0,m*sampleGaussian(0,noise));
 
-		//	if(rand()%100==0)
-		//	noisePose=Pose3D (0,0.5,0,
-		//					  0,0,0);
+			/*if(rand()%100==0)
+			noisePose=Pose3D (0,0.5,0,
+							  0,0,0);*/
 
 			
 			odomNoise.pose*=inc;
 			odomNoise.pose*=noisePose;
-			localizer.move(odomNoise,noise,&real);
+			//localizer.move(odomNoise,noise*10,&real);
 		}
 	
-		if(robot->getLaserData(laserData))
-			localizer.observe(laserData);
+		//if(robot->getLaserData(laserData))
+			//localizer.observe(laserData);
 		
 		float va2=va,vg2=vg;
 		robot->move(va2,vg2);
 
-		Pose3D realPose=localizer.getEstimatedPose();
+		//Pose3D realPose=localizer.getEstimatedPose();
 	//	cout<<"RealPose: "<<realPose<<endl;
-		robot->setLocation(realPose);
+		//robot->setLocation(realPose);
 	}
 	void Key(unsigned char key)
 	{
