@@ -284,9 +284,9 @@ void InitWorld1()
 //it works!!!
 
 //probando el mesh
-	MeshPart *tmesh=createWoodBench();
-	tmesh->setRelativePosition(Vector3D(12,2,0));
-	world+=tmesh;	
+//	MeshPart *tmesh=createWoodBench();
+//	tmesh->setRelativePosition(Vector3D(12,2,0));
+//	world+=tmesh;	
 	
 //probando el robot
 	myrobot=new Pioneer3ATSim;
