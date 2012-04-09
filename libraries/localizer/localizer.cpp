@@ -184,6 +184,7 @@ void Localizer::observe(const LaserData& laser)
 		resample();
 
 	computeDrawWeights();
+	computeEstimatedPose();
 //	printInfo();
 }
 void Localizer::normalizeWeights()
@@ -253,6 +254,7 @@ void Localizer::move(Odometry odom,double noise,Pose3D* groundTruth)
 		}
 	}
 	delete base;
+	normalizeWeights();
 	computeEstimatedPose();
 }
 double Localizer::neff()
@@ -282,6 +284,7 @@ void Localizer::resample() //systematic
 //	cout<<"Step: "<<step<<" init "<<init<<endl;
 	int current=0;
 	vector<Particle> aux(num);
+	double newW=1.0/num;
 	for(unsigned int i=0;i<num;i++)
 	{
 		double v=init+step*i;
@@ -291,10 +294,11 @@ void Localizer::resample() //systematic
 
 	//	cout<<current<<" ";
 		aux[i]=particles[current];
-		aux[i].weight=1;
+		aux[i].weight=newW;
 	}
-	cout<<endl;
+//	cout<<endl;
 	particles=aux;
+//	normalizeWeights();
 	computeEstimatedPose();
 }
 void Localizer::computeEstimatedPose()
@@ -307,18 +311,18 @@ void Localizer::computeEstimatedPose()
 	{
 		double w=particles[i].weight;
 		if(max<w){max=w;maxi=i;}
-		average+=particles[i].pose.position;		
+		average+=particles[i].pose.position*w;		
 		particles[i].pose.orientation.getRPY(r,p,y);
 		roll.push_back(r);pitch.push_back(p);yaw.push_back(y);
 	}
 	r=Angle::average(roll);
 	y=Angle::average(yaw);
 	p=Angle::average(pitch);
-	Pose3D result(average/particles.size());
+	Pose3D result(average);
 	result.orientation.setRPY(r,p,y);
 
 	estimatedPose=result;
-	if(maxi!=-1)
-		estimatedPose=particles[maxi].pose;
+//	if(maxi!=-1)
+//		estimatedPose=particles[maxi].pose;
 	filterTraj.push_back(result.position);
 }
