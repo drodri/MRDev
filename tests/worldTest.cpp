@@ -33,6 +33,9 @@ QuadrotorSim *quadrotor;
 
 void InitWorld1();
 void InitWorld2();
+void InitWorld3();
+void InitWorldSquaredRingNoWalls();
+void InitWorldSquaredRingWalls();
 
 int main(int argc, char* argv[])
 {
@@ -50,7 +53,7 @@ int main(int argc, char* argv[])
 	scene.init();
 
 
-	InitWorld2();
+	InitWorldSquaredRingNoWalls();
 //probador de grabar y cargar
 	//probando a grabar en un fichero el prismatic part, despues lo añado
 /*	if(1){
@@ -175,6 +178,120 @@ void OnMouseMove(int x,int y)
 	
 	glutPostRedisplay();
 }
+
+void InitWorldSquaredRingWalls()
+{
+	//Intializing test environment Faces included in a FacePart
+	Face suelo1(Transformation3D(0,0,0),-10,-10,-8,10);
+	Face suelo2(Transformation3D(0,0,0),8,-10,10,10);
+	Face suelo3(Transformation3D(0,0,0),-8,8,8,10);
+	Face suelo4(Transformation3D(0,0,0),-8,-10,8,-8);
+	suelo1.setColor(0.3f, 0.3f, 0.4f, 1);
+	suelo2.setColor(0.3f, 0.3f, 0.4f, 1);
+	suelo3.setColor(0.3f, 0.3f, 0.4f, 1);
+	suelo4.setColor(0.3f, 0.3f, 0.4f, 1);
+	
+	Face paredexterna1(Transformation3D(-10,0,0,Y_AXIS,PI/2),-5,-10,0,10);
+	Face paredexterna2(Transformation3D(10,0,0,Y_AXIS,PI/2),-5,-10,0,10);
+	Face paredexterna3(Transformation3D(0,-10,0,X_AXIS,PI/2),-10,0,10,5);
+	Face paredexterna4(Transformation3D(0,10,0,X_AXIS,PI/2),-10,0,10,5);
+	paredexterna1.setColor(0.5f, 0.5f, 0.0f, 1);
+	paredexterna2.setColor(0.5f, 0.5f, 0.0f, 1);
+	paredexterna3.setColor(0.5f, 0.5f, 0.0f, 1);
+	paredexterna4.setColor(0.5f, 0.5f, 0.0f, 1);
+	
+	Face paredinterna1(Transformation3D(-8,0,0,Y_AXIS,PI/2),-5,-8,0,8);
+	Face paredinterna2(Transformation3D(8,0,0,Y_AXIS,PI/2),-5,-8,0,8);
+	Face paredinterna3(Transformation3D(0,-8,0,X_AXIS,PI/2),-8,0,8,5);
+	Face paredinterna4(Transformation3D(0,8,0,X_AXIS,PI/2),-8,0,8,5);
+	paredinterna1.setColor(0.5f, 0.5f, 0.0f, 1);
+	paredinterna2.setColor(0.5f, 0.5f, 0.0f, 1);
+	paredinterna3.setColor(0.5f, 0.5f, 0.0f, 1);
+	paredinterna4.setColor(0.5f, 0.5f, 0.0f, 1);
+
+	FaceSetPart *building=new FaceSetPart; 
+	building->addFace(suelo1);
+	building->addFace(suelo2);
+	building->addFace(suelo3);
+	building->addFace(suelo4);
+	
+	building->addFace(paredexterna1);
+	building->addFace(paredexterna2);
+	building->addFace(paredexterna3);
+	building->addFace(paredexterna4);
+	
+	building->addFace(paredinterna1);
+	building->addFace(paredinterna2);
+	building->addFace(paredinterna3);
+	building->addFace(paredinterna4);
+
+	world+=building;
+
+	StreamFile myfile("squaredRingWalls.world",false);
+	world.writeToStream(myfile);
+	//myfile.write(&world);fails: FIXME
+}
+
+
+void InitWorldSquaredRingNoWalls()
+{
+	//Intializing test environment Faces included in a FacePart
+	Face suelo1(Transformation3D(0,0,0),-10,-10,-8,10);
+	Face suelo2(Transformation3D(0,0,0),8,-10,10,10);
+	Face suelo3(Transformation3D(0,0,0),-8,8,8,10);
+	Face suelo4(Transformation3D(0,0,0),-8,-10,8,-8);
+	suelo1.setColor(0.3f, 0.3f, 0.4f, 1);
+	suelo2.setColor(0.3f, 0.3f, 0.4f, 1);
+	suelo3.setColor(0.3f, 0.3f, 0.4f, 1);
+	suelo4.setColor(0.3f, 0.3f, 0.4f, 1);
+	
+	Face paredexterna1(Transformation3D(-20,0,0,Y_AXIS,PI/2),-5,-10,0,10); //añadida por el problema con las glut
+	paredexterna1.setColor(0.5f, 0.5f, 0.0f, 1);
+	
+	FaceSetPart *building=new FaceSetPart; 
+	building->addFace(suelo1);
+	building->addFace(suelo2);
+	building->addFace(suelo3);
+	building->addFace(suelo4);
+	
+	building->addFace(paredexterna1);
+
+	world+=building;
+
+	StreamFile myfile("squaredRingNoWalls.world",false);
+	world.writeToStream(myfile);
+	//myfile.write(&world);fails: FIXME
+}
+
+void InitWorld3()
+{
+	//Intializing test environment Faces included in a FacePart
+	Face suelo(Transformation3D(0,0,0),-10,-10,10,10);
+	suelo.setColor(0.3f, 0.3f, 0.4f, 1);
+
+	Face paredfondo1(Transformation3D(-10,0,0,Y_AXIS,PI/2),-3,-10,0,10);
+	Face paredfondo2(Transformation3D(10,0,0,Y_AXIS,PI/2),-3,-10,0,10);
+	Face paredfondo3(Transformation3D(-10,-10,0,X_AXIS,PI/2),0, 0, 20, 3);
+	Face paredfondo4(Transformation3D(-10,10,0,X_AXIS,PI/2),0, 0, 20, 3);
+	paredfondo1.setColor(0.5f, 0.5f, 0.0f, 1);
+	paredfondo2.setColor(0.5f, 0.5f, 0.0f, 1);
+	paredfondo3.setColor(0.5f, 0.5f, 0.0f, 1);
+	paredfondo4.setColor(0.5f, 0.5f, 0.0f, 1);
+
+	FaceSetPart *building=new FaceSetPart; 
+	building->addFace(suelo);
+	building->addFace(paredfondo1);
+	building->addFace(paredfondo2);
+	building->addFace(paredfondo3);
+	building->addFace(paredfondo4);
+
+	world+=building;
+
+	StreamFile myfile("squaredRoom.world",false);
+	world.writeToStream(myfile);
+	//myfile.write(&world);fails: FIXME
+}
+
 void InitWorld2()
 {
 	//Intializing test environment Faces included in a FacePart
@@ -284,9 +401,9 @@ void InitWorld1()
 //it works!!!
 
 //probando el mesh
-	MeshPart *tmesh=createWoodBench();
-	tmesh->setRelativePosition(Vector3D(12,2,0));
-	world+=tmesh;	
+	//MeshPart *tmesh=createWoodBench();
+	//tmesh->setRelativePosition(Vector3D(12,2,0));
+	//world+=tmesh;	
 	
 //probando el robot
 	myrobot=new Pioneer3ATSim;

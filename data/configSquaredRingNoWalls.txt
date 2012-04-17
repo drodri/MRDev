@@ -1,6 +1,6 @@
 world: squaredRingNoWalls.world
 robots: 1
-neo 15000 -2.4 -9 0
+doris 15000 -2.4 -9 0
 persons: 0
 noname  1.8 4 -4 0.1
 noname  1.2 5 1 0.1
