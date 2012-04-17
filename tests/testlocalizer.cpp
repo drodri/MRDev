@@ -12,20 +12,21 @@ class MyGlutApp: public GlutApp
 public:
 	MyGlutApp(string name):GlutApp(name),localizer(100)
 	{
-		robot=new Neo();
+		robot=new Doris();
 		robot->connectClients("127.0.0.1",15000);	
-		if(!datalog.open("log/localizer"))
-			LOG_ERROR("Unable to open log");
-		else
-			robot->startLogging("log/localizer");
-	//	robot->connectLog("log/localizer");
-	//	world+=robot;
+		robot->startLogging("log/localizer");
+		//robot->connectLog("log/localizer");
+		world+=robot;
 	//	scene.addObject(&world);
 		scene.SetViewPoint(35,160,25);	
 		va=vg=0;
 
-		localizer.loadMap("data/squaredRoom.world");
-		Pose3D initPose(-2.4, -7, 0);
+		localizer.loadMap("data/squaredRingNoWalls.world");
+		Pose3D initPose(-2.4, -9, 0);
+		//localizer.loadMap("data/squaredRingNoWalls.world");
+		//Pose3D initPose(-2.4, -9, 0);
+	// localizer.loadMap("data/squaredRoom.world");
+	// Pose3D initPose(-2.4, -7, 0);
 	// localizer.loadMap("data/controlTest.world");
 	//	Pose3D initPose(2.4,8,0);
 	//	Pose3D initPose(-7,-5,0);
@@ -63,20 +64,24 @@ public:
 							  0,0,0);*/
 
 			
-			odomNoise.pose*=inc;
+			odomNoise.pose*=inc; //odometry pose + inc?
 			odomNoise.pose*=noisePose;
-			//localizer.move(odomNoise,noise*10,&real);
+			localizer.move(odomNoise,noise*10,&real);
 		}
+		else 
+			cout << "No odometry data" << endl;
 	
-		//if(robot->getLaserData(laserData))
+		if(robot->getLaserData(laserData))
+		{
 			//localizer.observe(laserData);
+		}
 		
 		float va2=va,vg2=vg;
 		robot->move(va2,vg2);
 
-		//Pose3D realPose=localizer.getEstimatedPose();
+		Pose3D realPose=localizer.getEstimatedPose();
 	//	cout<<"RealPose: "<<realPose<<endl;
-		//robot->setLocation(realPose);
+		robot->setLocation(realPose);
 	}
 	void Key(unsigned char key)
 	{
@@ -143,7 +148,6 @@ private:
 	World world;
 	MobileRobot* robot;
 	Localizer localizer;
-	DataLogOut datalog;
 };
 
 void printUsage();
