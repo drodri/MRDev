@@ -15,8 +15,8 @@ public:
 		robot=new Doris();
 		robot->connectClients("127.0.0.1",15000);	
 
-	//	robot->startLogging("log/localizer");
-	//	robot->connectLog("log/localizer");
+		robot->startLogging("log/localizer");
+		//robot->connectLog("log/localizer");
 		world+=robot;
 
 	//	scene.addObject(&world);
@@ -78,7 +78,7 @@ public:
 	
 		if(robot->getLaserData(laserData))
 		{
-		//	localizer.observe(laserData);
+			localizer.observe(laserData);
 		}
 		
 		float va2=va,vg2=vg;
