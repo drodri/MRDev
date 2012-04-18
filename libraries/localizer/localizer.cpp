@@ -123,7 +123,8 @@ void Localizer::log2linearWeights( )
 void Localizer::observe(const LaserData& laser)
 {
 
-	LMS100Sim lms;
+	LaserSensorSim lms;
+	lms.setLaserProperties(laser.getStartAngle(), laser.getStep(), laser.size(), laser.getMaxRange(), laser.getSigma());
 	laserD=laser;
 	vector<double> obs=laser.getRanges();
 	cout<<"Particles-------------------------------------------------------"<<endl;
