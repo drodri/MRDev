@@ -53,17 +53,22 @@ int main(int argc, char* argv[])
 	scene.init();
 
 
-	InitWorldSquaredRingNoWalls();
+//	InitWorldSquaredRingNoWalls();
+//	InitWorld1();
 //probador de grabar y cargar
 	//probando a grabar en un fichero el prismatic part, despues lo añado
 /*	if(1){
 	StreamFile myfile("tmp.txt",false);
 	myfile.write(&world);
-	}
+	}*/
 
 	StreamFile myfile2("tmp.txt",true);
-	Object *test1=myfile2.read();
-	World *test2=dynamic_cast<World *>(test1);*/
+	//Object *test1=myfile2.read(&world);
+	//World *test2=dynamic_cast<World *>(test1);
+	//world=*test2;
+
+	myfile2.read(&world);
+
 /*	PositionableEntity *test2=dynamic_cast<PositionableEntity *>(test1);
 	
 	if(test2){
@@ -71,7 +76,7 @@ int main(int argc, char* argv[])
 	}*/
 
 //Adding objects to scene. As everything belongs to world, only world is added to the scene
-	//scene.addObject(test2);
+//	scene.addObject(test2);
 
 	/*WheeledBaseSim *prueba=dynamic_cast<WheeledBaseSim *>(test2->getObjectByName("Neo"));
 	if(prueba)myrobot=prueba;*/
@@ -227,9 +232,9 @@ void InitWorldSquaredRingWalls()
 
 	world+=building;
 
-	StreamFile myfile("squaredRingWalls.world",false);
-	world.writeToStream(myfile);
-	//myfile.write(&world);fails: FIXME
+	StreamFile myfile("squaredRingWalls2.world",false);
+	//world.writeToStream(myfile);
+	myfile.write(&world);
 }
 
 
@@ -258,9 +263,10 @@ void InitWorldSquaredRingNoWalls()
 
 	world+=building;
 
-	StreamFile myfile("squaredRingNoWalls.world",false);
-	world.writeToStream(myfile);
-	//myfile.write(&world);fails: FIXME
+
+	StreamFile myfile("squaredRingNoWalls2.world",false);
+	//world.writeToStream(myfile);
+	myfile.write(&world);
 }
 
 void InitWorld3()
@@ -288,7 +294,8 @@ void InitWorld3()
 	world+=building;
 
 	StreamFile myfile("squaredRoom.world",false);
-	world.writeToStream(myfile);
+	myfile.write(&world);
+	//world.writeToStream(myfile);
 	//myfile.write(&world);fails: FIXME
 }
 
