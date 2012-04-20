@@ -1,5 +1,6 @@
 #include "localizer.h"
 #include <float.h>
+
 void Localizer::drawGL(void)
 {
 	map.drawGL();

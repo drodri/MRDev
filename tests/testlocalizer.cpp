@@ -7,36 +7,112 @@
 using namespace mr;
 using namespace std;
 
-class MyGlutApp: public GlutApp
+class MyLocalizerApp: public GlutApp
 {
 public:
-	MyGlutApp(string name):GlutApp(name),localizer(100)
+	MyLocalizerApp(string name):GlutApp(name),localizer(100)
 	{
-		robot=new Doris();
-		robot->connectClients("127.0.0.1",15000);	
-
-		robot->startLogging("log/localizer");
-		//robot->connectLog("log/localizer");
-		world+=robot;
-
-	//	scene.addObject(&world);
+		robot=0;
+		scene.addObject(&world);
 		scene.SetViewPoint(35,160,25);	
 		va=vg=0;
+	}
+	virtual ~MyLocalizerApp()
+	{
+		delete robot;
+	}
+	bool loadConfig(string filename)
+	{	
+		string fold=filename.substr(0,filename.find_last_of('/'));
+		ifstream file(filename.c_str());
+	
+	
+		while(1)
+		{
+			string line;
+			getline(file,line);
+			if(!file.good())
+				break;
+			if(line[0]=='#')
+				continue;
 
-		localizer.loadMap("data/squaredRingNoWalls.world");
-	//	localizer.loadMap("data/squaredRoom.world");
-		Pose3D initPose(-2.4, -9, 0);
-
-		//localizer.loadMap("data/squaredRingNoWalls.world");
-		//Pose3D initPose(-2.4, -9, 0);
-	// localizer.loadMap("data/squaredRoom.world");
-	// Pose3D initPose(-2.4, -7, 0);
-
-	// localizer.loadMap("data/controlTest.world");
-	//	Pose3D initPose(2.4,8,0);
-	//	Pose3D initPose(-7,-5,0);
-		robot->setLocation(initPose);
-		localizer.initializeGaussian(initPose,0.2);
+			stringstream buffer(line);
+			string command;
+			buffer>>command;
+			if(command=="world:")
+			{
+				string worldFile;
+				buffer>>worldFile;
+				string current=currentDirectory();
+				changeDirectory(fold);
+				localizer.loadMap(worldFile);
+				changeDirectory(current);
+			}
+			else if(command=="initPose:")
+			{
+				float x,y,z;
+				buffer>>x>>y>>z;
+				Pose3D initPose(x,y,z);
+				localizer.initializeGaussian(initPose,0.2);
+				robot->setLocation(initPose);
+			}
+			else if(command=="robot:")
+			{
+				string robotName;
+				buffer>>robotName;
+				if(robotName=="neo")
+					robot=new Neo();
+				else if(robotName=="doris")
+					robot=new Doris();
+				else
+				{
+					LOG_ERROR("Robot not defined: "<<robotName);
+					return false;
+				}
+				world+=robot;
+			}
+			else if(command=="connect:")
+			{
+				string typ;
+				buffer>>typ;
+				if(typ=="simulator")
+				{
+					string ip;int port;
+					buffer>>ip>>port;
+					LOG_INFO("Connect to remote robot: "<<ip<<":"<<port);
+					robot->connectClients(ip,port);
+				}
+				else if(typ=="log")
+				{
+					string logFile;
+					buffer>>logFile;
+					LOG_INFO("Connect to datalog: "<<logFile);
+					robot->connectLog(logFile);
+					SetTimer(0.0001);
+				}
+				else
+				{
+					LOG_ERROR("Robot connection not defined: "<<typ);
+					return false;
+				}
+			}
+			else if(command=="numParticles:")
+			{
+				int num;
+				buffer>>num;
+				localizer=Localizer(num);
+			}
+			else if(command=="log:")
+			{
+				string logFolder;
+				buffer>>logFolder;
+				if(logFolder!="")
+					robot->startLogging(logFolder);
+			}
+		}
+		file.close();
+		
+		return true;
 	}
 	void Draw(void)
 	{
@@ -161,7 +237,19 @@ int main(int argc,char* argv[])
 {
 	mrcoreInit();
 //	Logger::SetFileStream("logLocalizer.txt");
-	MyGlutApp myApp("localizer");
+
+	if(argc<2)
+	{
+		LOG_ERROR("Please introduce config file");
+		return -1;
+	}
+	string fileConfig(argv[1]);
+	MyLocalizerApp myApp("localizer");
+	if(!myApp.loadConfig(fileConfig))
+	{
+		LOG_ERROR("Error load config file");
+		return -1;
+	}
 	myApp.Run();
 	return 0;   
 }
