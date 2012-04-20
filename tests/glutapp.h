@@ -30,6 +30,7 @@ public:
 	virtual void MouseClick(int button,int state, int x,int y){}
 
 	void Run();
+	void SetTimer(float time);
 private:
 
 	

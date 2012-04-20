@@ -8,7 +8,7 @@
 using namespace std;
 
 GlutApp* theApp=0;
-
+int ellapsedTime=25;
 void OnDraw(void)
 {
 	//Borrado de la pantalla	
@@ -40,10 +40,10 @@ void OnTimer(int value)
 {
 //poner aqui el código de animacion
 	if(theApp)
-		theApp->Timer(0.025);
+		theApp->Timer(ellapsedTime/1000.0f);
 
 	//no borrar estas lineas
-	glutTimerFunc(25,OnTimer,0);
+	glutTimerFunc(ellapsedTime,OnTimer,0);
 	glutPostRedisplay();
 }
 void OnMouseClick(int b,int state, int x,int y)
@@ -87,6 +87,10 @@ GlutApp::GlutApp(string name)
 		glutMotionFunc(OnMouseMove);
 		glutMouseFunc(OnMouseClick);
 	}
+}
+void GlutApp::SetTimer(float time)
+{
+	ellapsedTime=time*1000;
 }
 void GlutApp::Run()
 {
