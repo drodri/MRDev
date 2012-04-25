@@ -24,9 +24,11 @@ public:
 	void drawGL();
 	bool loadMap(string filename);
 	void initializeGaussian(Pose3D initPose,double noise);
-	void observe(const LaserData& laser);
+	bool observe(const LaserData& laser); //returns true if resampling applied
 	void move(Odometry odom,double noise,Pose3D* groundTruth);
 	Pose3D getEstimatedPose(){return estimatedPose;}
+	
+	Path3D odomTraj,groundTraj,filterTraj;
 	
 private:
 	void printInfo();
@@ -42,7 +44,7 @@ private:
 	Pose3D odomPose;
 	Pose3D estimatedPose;
 	Pose3D ground;
-	Path3D odomTraj,groundTraj,filterTraj;
+	//Path3D odomTraj,groundTraj,filterTraj;
 	Pose3D offset;
 	LaserData laserD;
 };
