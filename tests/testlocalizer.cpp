@@ -162,7 +162,11 @@ public:
 		if(robot->getLaserData(laserData))
 		{
 			if(localizer.observe(laserData))
-					log_errors << "resampling " << endl;
+			{
+				double r = 0.5;
+				log_errors << r << endl;
+				
+			}
 		}
 		
 		float va2=va,vg2=vg;
