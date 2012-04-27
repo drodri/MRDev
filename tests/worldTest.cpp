@@ -32,7 +32,8 @@ AdeptOneSim *manipulator;
 QuadrotorSim *quadrotor;
 
 void InitWorld1();
-void InitWorld2();
+void InitWorldColumns();
+void InitWorldColumns2();
 void InitWorld3();
 void InitWorldSquaredRingNoWalls();
 void InitWorldSquaredRingWalls();
@@ -52,6 +53,7 @@ int main(int argc, char* argv[])
 	glutTimerFunc(100,OnTimer,0);
 	scene.init();
 
+	InitWorldColumns2();
 
 	InitWorldSquaredRingNoWalls();
 //	InitWorld1();
@@ -61,13 +63,6 @@ int main(int argc, char* argv[])
 	StreamFile myfile("tmp.txt",false);
 	myfile.write(&world);
 	}*/
-
-	StreamFile myfile2("tmp.txt",true);
-	//Object *test1=myfile2.read(&world);
-	//World *test2=dynamic_cast<World *>(test1);
-	//world=*test2;
-
-	myfile2.read(&world);
 
 /*	PositionableEntity *test2=dynamic_cast<PositionableEntity *>(test1);
 	
@@ -106,7 +101,14 @@ void OnTimer(int value)
 }
 void OnKeyboardDown(unsigned char key, int x, int y)
 {
+	LOG_INFO("ON keyboard down "<<key);
 	scene.KeyDown(key);
+	if(key=='s'){
+		LOG_INFO("Writing world");
+		StreamFile myfile("tmp.txt",false);
+		myfile.write(&world);
+		}
+
 
 	static double angle=0;
 /*	if(key=='0')
@@ -141,7 +143,9 @@ void OnKeyboardDown(unsigned char key, int x, int y)
 		StreamFile myfile("tmp.txt",false);
 		myfile.write(&world);
 		}
-/*	if(key=='o'){
+/*
+	
+	if(key=='o'){
 		manipulator->getJoint(0)->setTarget(0.5);
 		manipulator->getJoint(0)->setSpeed(0.4);
 		manipulator->getJoint(1)->setTarget(0.5);
@@ -231,10 +235,6 @@ void InitWorldSquaredRingWalls()
 	building->addFace(paredinterna4);
 
 	world+=building;
-
-	StreamFile myfile("squaredRingWalls2.world",false);
-	//world.writeToStream(myfile);
-	myfile.write(&world);
 }
 
 
@@ -262,11 +262,6 @@ void InitWorldSquaredRingNoWalls()
 	building->addFace(paredexterna1);
 
 	world+=building;
-
-
-	StreamFile myfile("squaredRingNoWalls2.world",false);
-	//world.writeToStream(myfile);
-	myfile.write(&world);
 }
 
 void InitWorld3()
@@ -292,14 +287,9 @@ void InitWorld3()
 	building->addFace(paredfondo4);
 
 	world+=building;
-
-	StreamFile myfile("squaredRoom.world",false);
-	myfile.write(&world);
-	//world.writeToStream(myfile);
-	//myfile.write(&world);fails: FIXME
 }
 
-void InitWorld2()
+void InitWorldColumns()
 {
 	//Intializing test environment Faces included in a FacePart
 	Face suelo(Transformation3D(0,0,0),-10,-10,15,10);
@@ -346,10 +336,55 @@ void InitWorld2()
 	}
 
 	world+=building;
+}
+void InitWorldColumns2()
+{
+	//Intializing test environment Faces included in a FacePart
+	Face suelo(Transformation3D(0,0,0),-10,-10,15,10);
+	suelo.setColor(0.3f, 0.3f, 0.4f, 1);
 
-	StreamFile myfile("controlTest.world",false);
-	world.writeToStream(myfile);
-	//myfile.write(&world);fails: FIXME
+	Face paredfondo1(Transformation3D(-10,0,0,Y_AXIS,PI/2),-3,-10,0,10);
+	Face paredfondo2(Transformation3D(15,0,0,Y_AXIS,PI/2),-3,-10,0,10);
+	Face paredfondo3(Transformation3D(-10,-10,0,X_AXIS,PI/2),0, 0, 25, 3);
+	Face paredfondo4(Transformation3D(-10,10,0,X_AXIS,PI/2),0, 0, 25, 3);
+//	Face paredmedio(Transformation3D(-10,0,0,X_AXIS,PI/2),2, 0, 23, 3);
+	paredfondo1.setColor(0.5f, 0.5f, 0.0f, 1);
+	paredfondo2.setColor(0.5f, 0.5f, 0.0f, 1);
+	paredfondo3.setColor(0.5f, 0.5f, 0.0f, 1);
+	paredfondo4.setColor(0.5f, 0.5f, 0.0f, 1);
+//	paredmedio.setColor(0.8f, 0.5f, 0.0f, 1);
+
+	FaceSetPart *building=new FaceSetPart; 
+	building->addFace(suelo);
+	building->addFace(paredfondo1);
+	building->addFace(paredfondo2);
+	building->addFace(paredfondo3);
+	building->addFace(paredfondo4);
+//	building->addFace(paredmedio);
+
+	float sep=1.7;
+	float colWidth=0.3;
+	int cont=0;
+	for(float x=-8;x<=14;x+=sep)
+	{
+		cont++;
+		for(float y=-10;y<=10;y+=sep)
+		{	
+			PrismaticPart *mypart=new PrismaticPart;
+			vector<Vector2D> list;
+			list.push_back(Vector2D(0,0));
+			list.push_back(Vector2D(0,colWidth));
+			list.push_back(Vector2D(colWidth,colWidth));
+			list.push_back(Vector2D(colWidth,0));
+			mypart->setPolygonalBase(list);
+			mypart->setRelativePosition(Vector3D(x,y+(cont%3)*sep/3,0));
+			mypart->setRelativeOrientation(0,0,PI/2);
+			mypart->setHeight(1);
+			world+=mypart;
+		}
+	}
+
+	world+=building;
 }
 void InitWorld1()
 {

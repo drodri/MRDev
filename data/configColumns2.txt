@@ -1,0 +1,4 @@
+world: columns2.world
+robots: 1
+neo 13000 -6.5 -4.5 0
+persons: 0

@@ -31,9 +31,21 @@ public:
 		if(mini>=0)
 		{
 			cout<<"Current segm: "<<mini<<endl;
-			speed=2;
 			Vector2D v3=points[mini+1]-pose.position();
-			rot=6.0*Angle::difference(v3.argument(),pose.angle());
+			float angDiff=Angle::difference(v3.argument(),pose.angle());
+			//if(min>3)
+			//{
+			//	cout<<"Too far"<<endl;
+			//	speed=0.5;
+			//	rot=25.0*Angle::difference(v3.argument(),pose.angle());
+			//}
+			//else
+			{
+				speed=2;
+				if(fabs(angDiff)>25*DEG2RAD)
+					speed=1;
+				rot=6.0*Angle::difference(v3.argument(),pose.angle());
+			}
 		}
 
 	}
