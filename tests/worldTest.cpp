@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
 	scene.init();
 
 
-//	InitWorldSquaredRingNoWalls();
+	InitWorldSquaredRingNoWalls();
 //	InitWorld1();
 //probador de grabar y cargar
 	//probando a grabar en un fichero el prismatic part, despues lo añado
@@ -109,7 +109,7 @@ void OnKeyboardDown(unsigned char key, int x, int y)
 	scene.KeyDown(key);
 
 	static double angle=0;
-	if(key=='0')
+/*	if(key=='0')
 		pruebaLaser->setDrawGLMode(0);
 	if(key=='1')
 		pruebaLaser->setDrawGLMode(1);
@@ -135,13 +135,13 @@ void OnKeyboardDown(unsigned char key, int x, int y)
 	if(key=='b')speed-=0.1;
 	if(key=='h')rotspeed-=0.2;
 	if(key=='f')rotspeed+=0.2;
-	if(key==' ')rotspeed=speed=0;
+	if(key==' ')rotspeed=speed=0;*/
 
 	if(key=='S'){
 		StreamFile myfile("tmp.txt",false);
 		myfile.write(&world);
 		}
-	if(key=='o'){
+/*	if(key=='o'){
 		manipulator->getJoint(0)->setTarget(0.5);
 		manipulator->getJoint(0)->setSpeed(0.4);
 		manipulator->getJoint(1)->setTarget(0.5);
@@ -155,7 +155,7 @@ void OnKeyboardDown(unsigned char key, int x, int y)
 	}
 	
 	myrobot->move(speed,rotspeed);
-	pruebaLaser->updateSensorData();
+	pruebaLaser->updateSensorData();*/
 
 	scene.KeyDown(key);
 	glutPostRedisplay();	
