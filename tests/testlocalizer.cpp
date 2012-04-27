@@ -7,6 +7,8 @@
 using namespace mr;
 using namespace std;
 
+std::ofstream log_errors("Errors.txt",std::ios::out);
+
 class MyLocalizerApp: public GlutApp
 {
 public:
@@ -124,10 +126,12 @@ public:
 	{
 		Odometry odom;
 		LaserData laserData;
+		
+		Pose3D real;
 
 		if(robot->getOdometry(odom))
 		{
-			Pose3D real;
+			//Pose3D real;
 			robot->getPose3D(real);
 			static Pose3D last=odom.pose;
 			static Odometry odomNoise=odom;
@@ -135,7 +139,7 @@ public:
 			last=odom.pose;
 			double r,p,y;
 			inc.orientation.getRPY(r,p,y);
-			double noise=0.01;
+			double noise=0.1;
 			double m=inc.module();
 			Pose3D noisePose(m*sampleGaussian(0,noise),m*sampleGaussian(0,noise),0,
 							 0,0,m*sampleGaussian(0,noise));
@@ -147,20 +151,31 @@ public:
 			
 			odomNoise.pose*=inc; //odometry pose + inc?
 			odomNoise.pose*=noisePose;
-			localizer.move(odomNoise,noise*10,&real);
+			localizer.move(odomNoise,noise*1,&real);
 		}
 		else 
+		{
 			cout << "No odometry data" << endl;
+			return;
+		}
 	
 		if(robot->getLaserData(laserData))
 		{
-			localizer.observe(laserData);
+			if(localizer.observe(laserData))
+					log_errors << "resampling " << endl;
 		}
 		
 		float va2=va,vg2=vg;
 		robot->move(va2,vg2);
 
 		Pose3D realPose=localizer.getEstimatedPose();
+		
+		log_errors << sqrt((realPose.position.x-real.position.x)*(realPose.position.x-real.position.x)+
+						       (realPose.position.y-real.position.y )*(realPose.position.y-real.position.y)+  
+						       (realPose.position.z-real.position.z )*(realPose.position.z-real.position.z))<< endl;
+						     
+						
+		
 	//	cout<<"RealPose: "<<realPose<<endl;
 		robot->setLocation(realPose);
 	}
