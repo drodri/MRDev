@@ -168,7 +168,7 @@ public:
 	
 		if(robot->getLaserData(laserData))
 		{
-			localizer.observe(laserData);
+		//	localizer.observe(laserData);
 		}
 		else
 		{

@@ -41,7 +41,8 @@ bool Localizer::loadMap(string filename)
 		LOG_ERROR("Bad world file "<<filename);
 		return false;
 	}
-	map.readFromStream(worldFile);
+	worldFile.read(&map);
+	//map.readFromStream(worldFile);
 	return true;
 }
 void Localizer::computeDrawWeights()
@@ -270,7 +271,7 @@ void Localizer::move(Odometry odom,double noise,Pose3D* groundTruth)
 
 			//	cout<<"P: "<<i<<" collide "<<base->getClassName()<<endl;
 				particles[i].pose=oldPose;
-				particles[i].weight*= (1.0- inc.position.module()/0.5);
+				particles[i].weight*= max(0,(1.0- inc.position.module()*4));
 			//	cout<<"P: "<<i<<" collide "<<base->getClassName()<<endl;
 			}
 		}

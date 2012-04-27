@@ -1,0 +1,9 @@
+numParticles:	25
+world: 		columns2.world 
+robot: 		neo
+initPose: 	-6.5 -4.5 0
+connect: 	log	log/columns
+#connect:	simulator 127.0.0.1 13000
+neff:		0.75
+		
+
