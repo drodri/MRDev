@@ -1,0 +1,10 @@
+numParticles:	100
+world: 		square.world 
+robot: 		doris
+initPose: 	-2.4 -9  0
+#connect:	simulator 127.0.0.1 15000
+connect: 	log	log/square
+#log:		log/test1
+neff:		0.75
+		
+
