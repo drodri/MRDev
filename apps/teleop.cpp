@@ -19,13 +19,17 @@ public:
 		scene.SetViewPoint(35,160,25);	
 		va=vg=0;
 
+		float x=-7,y=-5;
 		vector<Vector2D> path;
-		path.push_back(Vector2D(0,0));
-		path.push_back(Vector2D(20,0));
-		path.push_back(Vector2D(20,10));
-		path.push_back(Vector2D(-1,10));
-		path.push_back(Vector2D(-1,1));
+		path.push_back(Vector2D(x,y));
+		path.push_back(Vector2D(x+20,y+0));
+		path.push_back(Vector2D(x+20,y+10));
+		path.push_back(Vector2D(x,y+10));
+		path.push_back(Vector2D(x,y));
 		traj.setPath(path);
+
+		manual=false;
+		robot->startLogging("log/columns");
 	}
 	void Draw(void)
 	{
@@ -47,18 +51,26 @@ public:
 		pose.orientation.getRPY(roll,pitch,yaw);
 		Pose2D robotPose(pose.position.x,pose.position.y,yaw);
 
-	//	traj.setData(robotPose);
-	//	traj.getSpeed(va,vg);
+		if(manual)
+			robot->move(va,vg);
+		else
+		{
+			traj.setData(robotPose);
+			traj.getSpeed(va,vg);
 
-	//	control.setCommand(va,vg);
-	//	control.setData(laserData);
-		float va2=va,vg2=vg;
-	//	control.getSpeed(va2,vg2);	
-		robot->move(va2,vg2);
+			control.setCommand(va,vg);
+			control.setData(laserData);
+			float va2=va,vg2=vg;
+			control.getSpeed(va2,vg2);	
+
+			robot->move(va2,vg2);
+		}
 	}
 	void Key(unsigned char key)
 	{
-		if(key=='a')
+		if(key=='m')
+			manual=!manual;
+		else if(key=='a')
 			vg+=0.05;
 		else if(key=='d')
 			vg-=0.05;
@@ -93,6 +105,7 @@ public:
 		glutPostRedisplay();
 	}
 private:
+	bool manual;
 	float vg,va;
 	GLScene scene;
 	World world;
@@ -115,8 +128,10 @@ int main(int argc,char* argv[])
 	int port=-1;
 	if(robotname=="nemo")
 		robot=new Nemo;*/
+	mrcoreInit();
 	MobileRobot* robot=new Neo();
 	robot->connectClients("127.0.0.1",13000);
+//	robot->connectLog("log/columns");
 	MyGlutApp myApp("teleop",robot);
 	myApp.Run();
 	return 0;   
