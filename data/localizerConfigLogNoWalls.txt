@@ -1,0 +1,7 @@
+numParticles:	100
+world: 		square_new.world 
+robot: 		doris
+initPose: 	-2.4 -9  0
+connect: 	log	log/square
+
+
