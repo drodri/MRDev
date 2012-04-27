@@ -120,8 +120,8 @@ void Localizer::log2linearWeights( )
 		particles[i].weight/= sumW;
 	cout<<particles[i].weight<<endl;
 	}
-}	
-void Localizer::observe(const LaserData& laser)
+}
+bool Localizer::observe(const LaserData& laser)
 {
 
 	LaserSensorSim lms;
@@ -129,7 +129,7 @@ void Localizer::observe(const LaserData& laser)
 	laserD=laser;
 	vector<double> obs=laser.getRanges();
 	cout<<"Particles-------------------------------------------------------"<<endl;
-	
+
 	vector<double> errors(particles.size(),1);
 	for(unsigned int i=0;i<particles.size();i++)
 	{
@@ -141,10 +141,12 @@ void Localizer::observe(const LaserData& laser)
 	//	particles[i].laser=predict;
 
 		vector<double> pred=predict.getRanges();
+		//cout << "obs size " << obs.size() << endl;
+		//cout << "pred size " << pred.size()<< endl;
 		assert(pred.size()==obs.size());
 		double maxRange=laser.getMaxRange();
 		double stdsqrt2=sqrt(2.0)*10.0f;//FIXME: replace with laser.getSigma();
-		for(unsigned int j=0;j<pred.size();j++) 
+		for(unsigned int j=0;j<pred.size();j++)
 		{
 			if(obs[j]>=maxRange-1)continue;
 			double diff=min(2.0, fabs(obs[j]-pred[j]))/stdsqrt2;
@@ -155,7 +157,7 @@ void Localizer::observe(const LaserData& laser)
 			errors[i]+=W;
 		//	LOG_INFO("OBS: "<<j<<" values: "<<obs[j]<<" ... "<<pred[j]<<" W: "<<W<<" log: "<<log(W));
 		}
-		
+
 		//particles[i].weight*=(1-error/(predict.size()*2.0));
 	//	particles[i].weight*=exp(error);
 	//	LOG_INFO("Error: "<<errors[i]);
@@ -182,11 +184,18 @@ void Localizer::observe(const LaserData& laser)
 //	log2linearWeights( );
 	normalizeWeights();
 	double nef=neff();
-	if(nef<particles.size()/2)
+	bool r = false;
+	//if(nef<particles.size()/2)
+	if(nef<0.75*particles.size())
+	{
 		resample();
+		r = true;
+	}
 
 	computeDrawWeights();
+	cout << "observe " << endl;
 	computeEstimatedPose();
+	return r;
 //	printInfo();
 }
 void Localizer::normalizeWeights()
@@ -195,16 +204,30 @@ void Localizer::normalizeWeights()
 	for(unsigned int i=0;i<particles.size();i++)
 	{
 		sum+=particles[i].weight;
+		//cout << "weight " << particles[i].weight << endl;
+
 	}
+
+	if (sum == 0)
+	{
+	    cout << "sum is 0 " << endl;
+
+	}
+
 //	LOG_INFO("Sum: "<<sum);
 	for(unsigned int i=0;i<particles.size();i++)
+	{
 		particles[i].weight/=sum;
+		//cout << "normalized weight " << particles[i].weight << endl;
+		//if (particles[i].weight != particles[i].weight)
+        //    cout << "normalized weight is nan " << endl;
+	}
 }
 void Localizer::move(Odometry odom,double noise,Pose3D* groundTruth)
 {
 	WheeledBaseSim* base=new Pioneer3ATSim(); //FIXME, select robot model as parameter
 	base->remove((*base)[5]);base->remove((*base)[4]);base->remove((*base)[3]);base->remove((*base)[2]);
-	
+
 	static Pose3D lastOdom=odom.pose;
 	Pose3D inc=lastOdom.inverted()*odom.pose;
 	lastOdom=odom.pose;
@@ -257,6 +280,7 @@ void Localizer::move(Odometry odom,double noise,Pose3D* groundTruth)
 	}
 	delete base;
 	normalizeWeights();
+	cout << "move " << endl;
 	computeEstimatedPose();
 }
 double Localizer::neff()
@@ -290,7 +314,7 @@ void Localizer::resample() //systematic
 	for(unsigned int i=0;i<num;i++)
 	{
 		double v=init+step*i;
-				
+
 		while(v>accum[current])
 			current++;
 
@@ -313,15 +337,27 @@ void Localizer::computeEstimatedPose()
 	{
 		double w=particles[i].weight;
 		if(max<w){max=w;maxi=i;}
-		average+=particles[i].pose.position*w;		
+		average+=particles[i].pose.position*w;
+		//cout << " w" << w << endl;
+		//cout << "average x" << average.x << endl;
+		//cout << "average y" << average.y << endl;
+		//cout << "average z" << average.z << endl;
 		particles[i].pose.orientation.getRPY(r,p,y);
+		//cout << "r, p, y " << r << " " << p << " " << y << " " << endl;
 		roll.push_back(r);pitch.push_back(p);yaw.push_back(y);
 	}
+	/*cout << "roll size " << roll.size() << endl;
+	cout << "pitch size " << roll.size() << endl;
+	cout << "yaw size " << roll.size() << endl;*/
+
 	r=Angle::average(roll);
 	y=Angle::average(yaw);
 	p=Angle::average(pitch);
 	Pose3D result(average);
 	result.orientation.setRPY(r,p,y);
+
+	if (result.position.x != result.position.x)
+		cout << "nan " << endl;
 
 	estimatedPose=result;
 //	if(maxi!=-1)
