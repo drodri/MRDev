@@ -28,19 +28,17 @@ public:
 			GLUquadric* quad =gluNewQuadric();
 			gluSphere	(quad , 0.02,8,8);
 			gluDeleteQuadric(quad);
-			glBegin(GL_POINTS);
-				glVertex3f(0.,0.,0.);
-			glEnd();
-			offset.transformGL();
 			
-			laser.drawGLMode=4;
-			laser.drawGL();
+		//	offset.transformGL();
+			
+		//	laser.drawGLMode=4;
+		//	laser.drawGL();
 		glPopMatrix();
 	}
 //protected:
 	Pose3D pose;
 	double weight;
-	double drawWeight;
+	float drawWeight;
 	LaserData laser;
 	Pose3D offset;
 };

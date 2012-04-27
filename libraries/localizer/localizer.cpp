@@ -29,8 +29,8 @@ void Localizer::printInfo()
 {
 	for(unsigned int i=0;i<particles.size();i++)
 	{
-		double dist=(Pose3D(2.4,7,0).inverted()*particles[i].pose).module();
-		LOG_INFO("W: "<<particles[i].weight<<" pose: "<<particles[i].pose<<" dist: "<<dist);
+	//	double dist=(Pose3D(2.4,7,0).inverted()*particles[i].pose).module();
+		LOG_INFO("W: "<<particles[i].weight<<" pose: "<<particles[i].pose);
 	}
 }
 bool Localizer::loadMap(string filename)
@@ -53,8 +53,11 @@ void Localizer::computeDrawWeights()
 			max=particles[i].weight;
 	}
 //	LOG_INFO("Max: "<<max);
+
 	for(unsigned int i=0;i<particles.size();i++)
+	{
 		particles[i].drawWeight=particles[i].weight/max;
+	}
 }
 void Localizer::initializeGaussian(Pose3D initPose,double noise)
 {
@@ -121,9 +124,8 @@ void Localizer::log2linearWeights( )
 	cout<<particles[i].weight<<endl;
 	}
 }
-bool Localizer::observe(const LaserData& laser)
+void Localizer::observe(const LaserData& laser)
 {
-
 	LaserSensorSim lms;
 	lms.setLaserProperties(laser.getStartAngle(), laser.getStep(), laser.size(), laser.getMaxRange(), laser.getSigma());
 	laserD=laser;
@@ -179,24 +181,23 @@ bool Localizer::observe(const LaserData& laser)
 	for(unsigned int i=0;i<particles.size();i++)
 	{
 		particles[i].weight*=exp(errors[i]-maxError);
-//		LOG_INFO("w: "<<particles[i].weight);
 	}
-//	log2linearWeights( );
-	normalizeWeights();
+	normalizeWeights(); //Check if necessary
+//	printInfo();
+}
+bool Localizer::checkResample()
+{
 	double nef=neff();
 	bool r = false;
 	//if(nef<particles.size()/2)
-	if(nef<0.75*particles.size())
+	if(nef<neffThreshold*particles.size())
 	{
 		resample();
 		r = true;
 	}
-
 	computeDrawWeights();
-	cout << "observe " << endl;
 	computeEstimatedPose();
 	return r;
-//	printInfo();
 }
 void Localizer::normalizeWeights()
 {
@@ -275,13 +276,11 @@ void Localizer::move(Odometry odom,double noise,Pose3D* groundTruth)
 		}
 		else
 		{
-			particles[i].weight=0;
+			particles[i].weight*=0.5;
 		}
 	}
 	delete base;
-	normalizeWeights();
-	cout << "move " << endl;
-	computeEstimatedPose();
+	normalizeWeights(); //Check if necessary
 }
 double Localizer::neff()
 {
