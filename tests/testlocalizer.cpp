@@ -181,16 +181,24 @@ public:
 		float va2=va,vg2=vg;
 		robot->move(va2,vg2);
 
-		Pose3D realPose=localizer.getEstimatedPose();
+		//Pose3D realPose=localizer.getEstimatedPose();
+		Pose3D correctedPose=localizer.getEstimatedPose();
+		Pose3D realPose = real;
 		
-		log_errors << sqrt((realPose.position.x-real.position.x)*(realPose.position.x-real.position.x)+
+		/*log_errors << sqrt((realPose.position.x-real.position.x)*(realPose.position.x-real.position.x)+
 						       (realPose.position.y-real.position.y )*(realPose.position.y-real.position.y)+  
-						       (realPose.position.z-real.position.z )*(realPose.position.z-real.position.z))<< endl;
+						       (realPose.position.z-real.position.z )*(realPose.position.z-real.position.z))<< endl;*/
+						       
+		Pose3D rel = real.inverted()*correctedPose;
+		double dis = rel.module();
+		//cout << "dis 3d " << dis << endl;				       
+						       
+		log_errors << dis << endl;
 						     
 						
 		
 	//	cout<<"RealPose: "<<realPose<<endl;
-		robot->setLocation(realPose);
+		robot->setLocation(correctedPose);
 	}
 	void Key(unsigned char key)
 	{
