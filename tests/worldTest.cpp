@@ -53,9 +53,9 @@ int main(int argc, char* argv[])
 	glutTimerFunc(100,OnTimer,0);
 	scene.init();
 
-	InitWorldColumns2();
+	//InitWorldColumns2();
 
-	InitWorldSquaredRingNoWalls();
+	InitWorldSquaredRingWalls();
 //	InitWorld1();
 //probador de grabar y cargar
 	//probando a grabar en un fichero el prismatic part, despues lo añado
