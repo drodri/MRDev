@@ -3,6 +3,7 @@
 #include "localizer.h"
 #include <iostream>
 #include "glutapp.h"
+#include "time.h"
 
 using namespace mr;
 using namespace std;
@@ -104,6 +105,12 @@ public:
 				buffer>>num;
 				localizer=Localizer(num);
 			}
+			else if(command=="neff:")
+			{
+				float num;
+				buffer>>num;
+				localizer.setNeff(num);
+			}
 			else if(command=="log:")
 			{
 				string logFolder;
@@ -139,7 +146,7 @@ public:
 			last=odom.pose;
 			double r,p,y;
 			inc.orientation.getRPY(r,p,y);
-			double noise=0.1;
+			double noise=0.01;
 			double m=inc.module();
 			Pose3D noisePose(m*sampleGaussian(0,noise),m*sampleGaussian(0,noise),0,
 							 0,0,m*sampleGaussian(0,noise));
@@ -161,14 +168,16 @@ public:
 	
 		if(robot->getLaserData(laserData))
 		{
-			if(localizer.observe(laserData))
-			{
-				double r = 0.5;
-				log_errors << r << endl;
-				
-			}
+			localizer.observe(laserData);
 		}
-		
+		else
+		{
+			cout<<"No laser data"<<endl;
+			return;
+		}
+		localizer.checkResample();
+//		localizer.printInfo();
+
 		float va2=va,vg2=vg;
 		robot->move(va2,vg2);
 
@@ -255,6 +264,7 @@ void printUsage();
 int main(int argc,char* argv[])
 {
 	mrcoreInit();
+	srand(time(0));
 //	Logger::SetFileStream("logLocalizer.txt");
 
 	if(argc<2)
