@@ -271,7 +271,7 @@ void Localizer::move(Odometry odom,double noise,Pose3D* groundTruth)
 
 			//	cout<<"P: "<<i<<" collide "<<base->getClassName()<<endl;
 				particles[i].pose=oldPose;
-				particles[i].weight*= max(0,(1.0- inc.position.module()*4));
+				particles[i].weight*= max(0.0,(1.0- inc.position.module()*4));
 			//	cout<<"P: "<<i<<" collide "<<base->getClassName()<<endl;
 			}
 		}

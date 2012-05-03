@@ -9,6 +9,7 @@ using namespace mr;
 using namespace std;
 
 std::ofstream log_errors("Errors.txt",std::ios::out);
+std::ofstream log_errors_odom("ErrorsOdom.txt",std::ios::out);
 
 class MyLocalizerApp: public GlutApp
 {
@@ -158,7 +159,14 @@ public:
 			
 			odomNoise.pose*=inc; //odometry pose + inc?
 			odomNoise.pose*=noisePose;
+			
+			Pose3D relOdom = real.inverted()*odomNoise.pose;
+		   double disOdom = relOdom.module();			       
+						       
+			log_errors_odom << disOdom << endl;
+			
 			localizer.move(odomNoise,noise*1,&real);
+			
 		}
 		else 
 		{
@@ -190,12 +198,11 @@ public:
 						       (realPose.position.z-real.position.z )*(realPose.position.z-real.position.z))<< endl;*/
 						       
 		Pose3D rel = real.inverted()*correctedPose;
-		double dis = rel.module();
-		//cout << "dis 3d " << dis << endl;				       
+		double dis = rel.module();			       
 						       
 		log_errors << dis << endl;
-						     
-						
+		
+			
 		
 	//	cout<<"RealPose: "<<realPose<<endl;
 		robot->setLocation(correctedPose);
