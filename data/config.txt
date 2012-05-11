@@ -1,4 +1,4 @@
-world: rampas.world
+world: squareWalls.world
 robots: 3
 neo 13000 6 1 0
 neo 14000 5 2 2

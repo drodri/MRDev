@@ -28,8 +28,8 @@ public:
 		path.push_back(Vector2D(x,y));
 		traj.setPath(path);
 
-		manual=false;
-		robot->startLogging("log/columns");
+		manual=true;
+		robot->startLogging("log/building");
 	}
 	void Draw(void)
 	{
