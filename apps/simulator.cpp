@@ -15,6 +15,16 @@ public:
 	}
 	void Draw(void)
 	{
+		Transformation3D t;
+		simulator.getRobot(0)->getPose3D(t);
+
+		scene.SetViewCenter(t.position.x,t.position.y,t.position.z);
+		double dist,alfa,beta;
+		scene.GetViewPoint(dist,alfa,beta);
+		double r,p,y;
+		t.orientation.getRPY(r,p,y);
+		scene.SetViewPoint(dist,y*RAD2DEG+180,beta);
+	
 		scene.Draw();
 	}
 	void Timer(float time)
