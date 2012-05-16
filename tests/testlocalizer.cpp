@@ -135,7 +135,7 @@ public:
 		LaserData laserData;
 		
 		Pose3D real;
-
+		while(1){
 		if(robot->getOdometry(odom))
 		{
 			//Pose3D real;
@@ -199,6 +199,7 @@ public:
 		
 	//	cout<<"RealPose: "<<realPose<<endl;
 		robot->setLocation(correctedPose);
+		}
 	}
 	void Key(unsigned char key)
 	{

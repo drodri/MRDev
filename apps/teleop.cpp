@@ -43,6 +43,8 @@ public:
 		LaserData laserData;
 
 		robot->getOdometry(odom);
+		Pose3D realPose;
+		robot->getPose3D(realPose);
 		robot->getLaserData(laserData);
 
 		//The odometry is full 3D, lets handle it only in 2D, as a Pose (x, y, theta)
