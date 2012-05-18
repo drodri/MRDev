@@ -1,4 +1,4 @@
-numParticles:	100
+numParticles:	25
 world: 		building.world 
 robot: 		neo
 initPose: 	 1 8 0

@@ -8,7 +8,7 @@
 using namespace mr;
 using namespace std;
 
-std::ofstream log_errors("Errors.txt",std::ios::out);
+ofstream log_errors("Errors.txt",std::ios::out);
 
 class MyLocalizerApp: public GlutApp
 {
@@ -16,7 +16,7 @@ public:
 	MyLocalizerApp(string name):GlutApp(name),localizer(100)
 	{
 		robot=0;
-		scene.addObject(&world);
+//		scene.addObject(&world);
 		scene.SetViewPoint(35,160,25);	
 		va=vg=0;
 	}
@@ -72,7 +72,7 @@ public:
 					LOG_ERROR("Robot not defined: "<<robotName);
 					return false;
 				}
-				world+=robot;
+//				world+=robot;
 			}
 			else if(command=="connect:")
 			{
@@ -127,15 +127,13 @@ public:
 	{
 		scene.Draw();
 		localizer.drawGL();
-
 	}
-	void Timer(float time)
+	bool step(float& error)
 	{
 		Odometry odom;
 		LaserData laserData;
 		
 		Pose3D real;
-		while(1){
 		if(robot->getOdometry(odom))
 		{
 			//Pose3D real;
@@ -146,7 +144,7 @@ public:
 			last=odom.pose;
 			double r,p,y;
 			inc.orientation.getRPY(r,p,y);
-			double noise=0.01;
+			double noise=0.03;
 			double m=inc.module();
 			Pose3D noisePose(m*sampleGaussian(0,noise),m*sampleGaussian(0,noise),0,
 							 0,0,m*sampleGaussian(0,noise));
@@ -154,8 +152,7 @@ public:
 			/*if(rand()%100==0)
 			noisePose=Pose3D (0,0.5,0,
 							  0,0,0);*/
-
-			
+		
 			odomNoise.pose*=inc; //odometry pose + inc?
 			odomNoise.pose*=noisePose;
 			localizer.move(odomNoise,noise*1,&real);
@@ -163,17 +160,17 @@ public:
 		else 
 		{
 			cout << "No odometry data" << endl;
-			return;
+			return false;
 		}
 	
 		if(robot->getLaserData(laserData))
 		{
-		//	localizer.observe(laserData);
+			localizer.observe(laserData);
 		}
 		else
 		{
 			cout<<"No laser data"<<endl;
-			return;
+			return false;
 		}
 		localizer.checkResample();
 //		localizer.printInfo();
@@ -193,16 +190,44 @@ public:
 		double dis = rel.module();
 		//cout << "dis 3d " << dis << endl;				       
 						       
-		log_errors << dis << endl;
-						     
+		//log_errors << dis << endl;
+		error=dis;
+	}				     
 						
+	void Timer(float time)
+	{
+	//	step();
 		
 	//	cout<<"RealPose: "<<realPose<<endl;
-		robot->setLocation(correctedPose);
-		}
+	//	robot->setLocation(correctedPose);
 	}
 	void Key(unsigned char key)
 	{
+		if(key=='l')
+		{	
+			for(int i=0;i<10000;i++)
+			{
+				WheeledBaseSim* p=new Pioneer3ATSim();
+				delete p;
+			}
+		}
+		if(key=='p')
+		{
+			int cont=0;
+			float e,sumE=0,maxE=0;
+			MRTime t;
+			t.tic();
+			while(step(e)){
+				sumE+=e;
+				if(maxE<e)
+					maxE=e;
+				cont++;
+			}
+			long elpTime=t.toc();
+			LOG_INFO("Steps: "<<cont<<" AvgError: "<<sumE/cont<<" MaxError:"<<maxE);
+			LOG_INFO("Time:"<<elpTime/1000<<" AvgTime: "<<elpTime/cont);
+			localizer.printParams();
+		}
 		/*if(key=='l')
 		{
 			LaserData laserData;
@@ -263,7 +288,7 @@ public:
 private:
 	float vg,va;
 	GLScene scene;
-	World world;
+//	World world;
 	MobileRobot* robot;
 	Localizer localizer;
 };

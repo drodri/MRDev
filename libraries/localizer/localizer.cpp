@@ -64,7 +64,7 @@ void Localizer::initializeGaussian(Pose3D initPose,double noise)
 {
 	odomPose=initPose;
 
-	WheeledBaseSim* base=new Pioneer3ATSim(); //FIXME, select robot model as parameter
+//	static WheeledBaseSim* base=new Pioneer3ATSim(); //FIXME, select robot model as parameter
 	int num=0,cont=0;
 	while(num<particles.size() && cont<particles.size()*1000)
 	{
@@ -84,13 +84,13 @@ void Localizer::initializeGaussian(Pose3D initPose,double noise)
 	}
 	normalizeWeights();
 	computeDrawWeights();
-	delete base;
+//	delete base;
 	if(num<particles.size())
 		LOG_ERROR("unable to generate particles with given init pose");
 }
 void Localizer::computeGroundLocations()
 {
-	WheeledBaseSim* base=new Pioneer3ATSim(); //FIXME, select robot model as parameter
+//	static WheeledBaseSim* base=new Pioneer3ATSim(); //FIXME, select robot model as parameter
 	for(unsigned int i=0;i<particles.size();i++)
 	{
 		Pose3D newPose=particles[i].pose;
@@ -105,7 +105,7 @@ void Localizer::computeGroundLocations()
 			particles[i].weight=0;
 		}
 	}
-	delete base;
+//	delete base;
 }
 void Localizer::log2linearWeights( )
 {
@@ -128,10 +128,10 @@ void Localizer::log2linearWeights( )
 void Localizer::observe(const LaserData& laser)
 {
 	LaserSensorSim lms;
-	lms.setLaserProperties(laser.getStartAngle(), laser.getStep(), laser.size(), laser.getMaxRange(), laser.getSigma());
+	lms.setLaserProperties(laser.getStartAngle(), laser.getStep()*skipLaser, laser.size(), laser.getMaxRange(), laser.getSigma());
 	laserD=laser;
 	vector<double> obs=laser.getRanges();
-	cout<<"Particles-------------------------------------------------------"<<endl;
+//	cout<<"Particles-------------------------------------------------------"<<endl;
 
 	vector<double> errors(particles.size(),1);
 	for(unsigned int i=0;i<particles.size();i++)
@@ -149,7 +149,7 @@ void Localizer::observe(const LaserData& laser)
 		assert(pred.size()==obs.size());
 		double maxRange=laser.getMaxRange();
 		double stdsqrt2=sqrt(2.0)*10.0f;//FIXME: replace with laser.getSigma();
-		for(unsigned int j=0;j<pred.size();j++)
+		for(unsigned int j=0;j<pred.size();j+=skipLaser)
 		{
 			if(obs[j]>=maxRange-1)continue;
 			double diff=min(2.0, fabs(obs[j]-pred[j]))/stdsqrt2;
@@ -227,8 +227,8 @@ void Localizer::normalizeWeights()
 }
 void Localizer::move(Odometry odom,double noise,Pose3D* groundTruth)
 {
-	WheeledBaseSim* base=new Pioneer3ATSim(); //FIXME, select robot model as parameter
-	base->remove((*base)[5]);base->remove((*base)[4]);base->remove((*base)[3]);base->remove((*base)[2]);
+	//static //FIXME, select robot model as parameter
+	//Remove Wheels here
 
 	static Pose3D lastOdom=odom.pose;
 	Pose3D inc=lastOdom.inverted()*odom.pose;
@@ -280,7 +280,7 @@ void Localizer::move(Odometry odom,double noise,Pose3D* groundTruth)
 			particles[i].weight*=0.5;
 		}
 	}
-	delete base;
+//	delete base;
 	normalizeWeights(); //Check if necessary
 }
 double Localizer::neff()
