@@ -56,7 +56,7 @@ public:
 				float x,y,z;
 				buffer>>x>>y>>z;
 				Pose3D initPose(x,y,z);
-				localizer.initializeGaussian(initPose,0.2);
+				localizer.initializeGaussian(initPose,0.001);
 				robot->setLocation(initPose);
 			}
 			else if(command=="robot:")
@@ -165,7 +165,7 @@ public:
 	
 		if(robot->getLaserData(laserData))
 		{
-			localizer.observe(laserData);
+		//	localizer.observe(laserData);
 		}
 		else
 		{
@@ -222,6 +222,8 @@ public:
 				if(maxE<e)
 					maxE=e;
 				cont++;
+				if(cont%100==0)
+					LOG_INFO("Iter: "<<cont);
 			}
 			long elpTime=t.toc();
 			LOG_INFO("Steps: "<<cont<<" AvgError: "<<sumE/cont<<" MaxError:"<<maxE);

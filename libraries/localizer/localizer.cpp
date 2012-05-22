@@ -356,9 +356,6 @@ void Localizer::computeEstimatedPose()
 	Pose3D result(average);
 	result.orientation.setRPY(r,p,y);
 
-	if (result.position.x != result.position.x)
-		cout << "nan " << endl;
-
 	estimatedPose=result;
 //	if(maxi!=-1)
 //		estimatedPose=particles[maxi].pose;
