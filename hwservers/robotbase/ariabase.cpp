@@ -1,7 +1,8 @@
 #include <iostream>
+#include <map>
 #include "mrcore/mrcore.h"
 #include "ariabase.h"
-
+using namespace std;
 namespace mr
 {
 AriaBase::AriaBase(int argc, char** argv)
@@ -13,7 +14,7 @@ AriaBase::AriaBase(int argc, char** argv)
 	argParser->loadDefaultArguments( );
 	robotConnector=new ArRobotConnector(argParser, &robot);
 	laserConnector=new ArLaserConnector(argParser, &robot, robotConnector); 
-	argParser->addDefaultArgument( "-connectLaser" );
+//	argParser->addDefaultArgument( "-connectLaser" );
 
 	if (!robotConnector->connectRobot())
 	{
@@ -40,19 +41,38 @@ AriaBase::AriaBase(int argc, char** argv)
 		robotType=PATROLBOT;
 	else 
 		robotType=PIONEER;
+	//laserConnector->logOptions();
+	if(!laserConnector->connectLasers(false, true, true))
+	{
+		ArLog::log(ArLog::Normal, "Warning: unable to connect to requested lasers.");
+	}
+
+
+	map< int, ArLaser * >*  myMap= robot.getLaserMap();
+	map<int, ArLaser*>::iterator it;
+	cout<<"SIze: "<<myMap->size()<<endl;
+	for(	it= myMap->begin();it!=myMap->end();it++)
+	{
+		cout<<"Laser: "<<(*it).first<<" laser: "<<endl;
+	}
 	
-//	if(!laserConnector->connectLasers())
-//	{
-//		ArLog::log(ArLog::Normal, "Warning: unable to connect to requested lasers.");
-//	}
-	
-//	laser=robot.findLaser(1);
-//	if(laser==0)
-//	{
-//		cout<<"Unable to find laser"<<endl;
-//		exit(1);
-//	}
- 	robot.runAsync(true);	
+ 	robot.runAsync(true);
+
+	laser=robot.findLaser(1);
+	if(laser==0)
+	{
+		cout<<"Unable to find laser"<<endl;
+		robot.stop();
+		delete laser;
+		delete robotConnector;
+		delete laserConnector;
+		delete argParser;
+ 		Aria::shutdown();
+
+		exit(1);
+	}
+//	laser->asyncConnect();
+ //	robot.runAsync(true);	
 	
 	robot.comInt(ArCommands::ENABLE, 1);
 	robot.comInt(ArCommands::SONAR, 0);
@@ -103,6 +123,7 @@ bool AriaBase::getData(LaserData& laserData)
 	 if(!laser->isConnected())
 	 {
 		 cout<<"laser not connected"<<endl;
+		
 		 return false;
 	 }
 	 
