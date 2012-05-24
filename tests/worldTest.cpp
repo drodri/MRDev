@@ -34,6 +34,7 @@ QuadrotorSim *quadrotor;
 //Implemented in "worlds" folder
 void CreateWorldEuitiLab(string filename);
 void CreateWorldBuilding(string filename);
+void CreateWorldDisamLab(string filename);
 
 void InitWorld1();
 void InitWorldColumns();
@@ -59,8 +60,10 @@ int main(int argc, char* argv[])
 
 //	string filename="euitilab.world";
 //	CreateWorldEuitiLab(filename);
-	string filename="building.world";
-	CreateWorldBuilding(filename);
+//	string filename="building.world";
+//	CreateWorldBuilding(filename);
+	string filename="disamlab.world";
+	CreateWorldDisamLab(filename);
 	StreamFile myfile(filename,true);
 	myfile.read(&world);
 	
