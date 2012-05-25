@@ -87,6 +87,7 @@ void CreateWorldDisamLab(string filename)
 	listWall[47].setColor((float)0.5, (float)0.5, (float)0.5, (float)1);
 	
 
+
 	//Add the walls to the building
 	for (i=0; i<listWall.size();i++)
 		building->addFace(listWall[i]);
