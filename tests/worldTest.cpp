@@ -45,6 +45,7 @@ void InitWorldSquaredRingWalls();
 
 int main(int argc, char* argv[])
 {
+	
 	mrcoreInit();
 	//GL Initialization stuff
 	glutInit(&argc, argv);
@@ -56,8 +57,9 @@ int main(int argc, char* argv[])
 	glutMouseFunc(OnMouseClick);
 	glutKeyboardFunc(OnKeyboardDown);
 	glutTimerFunc(100,OnTimer,0);
+	
 	scene.init();
-
+	
 //	string filename="euitilab.world";
 //	CreateWorldEuitiLab(filename);
 //	string filename="building.world";
