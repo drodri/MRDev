@@ -26,7 +26,59 @@ void calculateTransformation(Vector2D ini, Vector2D end, double& width, double& 
 		//pared diagonal
 	}
 }
+void createTable(double height, double widht, double deep, Vector2D origin,
+					Face &lat1, Face &lat2, Face &plank)
+{
+	plank.setBase(Transformation3D(origin.x,origin.y,height));
+	plank.addVertex(0.0,0.0);
+	plank.addVertex(0.0,widht);
+	plank.addVertex(deep,widht);
+	plank.addVertex(deep,0.0);
+	lat1.setBase(Transformation3D(origin.x,origin.y,0,X_AXIS,PI/2));
+	lat1.addVertex(0.0,0.0);
+	lat1.addVertex(0.0,height);
+	lat1.addVertex(deep,height);
+	lat1.addVertex(deep,0.0);
+	lat2=lat1;
+	lat2.setBase(Transformation3D(origin.x,origin.y+widht,0,X_AXIS,PI/2));
+	lat1.setColor(0.6,0.6,0.15,1);
+	lat2.setColor(0.6,0.6,0.15,1);
+	plank.setColor(0.6,0.6,0.15,1);
+}
 
+void createWardrobe(double height, double widht, double deep, Vector2D origin,
+					Face &lat1, Face &lat2, Face &lat3, Face &lat4, Face &lat5)
+{
+	lat1.setBase(Transformation3D(origin.x,origin.y,0,X_AXIS,PI/2));
+	lat1.addVertex(0.0,0.0);
+	lat1.addVertex(0.0,height);
+	lat1.addVertex(deep,height);
+	lat1.addVertex(deep,0.0);
+
+	lat2=lat1;
+	lat2.setBase(Transformation3D(origin.x,origin.y+widht,0,X_AXIS,PI/2));
+
+	lat3.setBase(Transformation3D(origin.x,origin.y,height));
+	lat3.addVertex(0.0,0.0);
+	lat3.addVertex(0.0,widht);
+	lat3.addVertex(deep,widht);
+	lat3.addVertex(deep,0.0);
+
+	lat4.setBase(Transformation3D(origin.x,origin.y,0,Y_AXIS,-PI/2));
+	lat4.addVertex(0.0,0.0);
+	lat4.addVertex(height,0.0);
+	lat4.addVertex(height,widht);
+	lat4.addVertex(0.0,widht);
+
+	lat5=lat4;
+	lat5.setBase(Transformation3D(origin.x+deep,origin.y,0,Y_AXIS,-PI/2));
+
+	lat1.setColor(0.5,0.5,0.5,1);
+	lat2.setColor(0.5,0.5,0.5,1);
+	lat3.setColor(0.5,0.5,0.5,1);
+	lat4.setColor(0.5,0.5,0.5,1);
+	lat5.setColor(0.5,0.5,0.5,1);
+}
 
 void CreateWorldDisamLab(string filename)
 {
@@ -85,12 +137,25 @@ void CreateWorldDisamLab(string filename)
 	listWall[34].setColor((float)0.5, (float)0.5, (float)0.5, (float)1);
 	listWall[43].setColor((float)0.5, (float)0.5, (float)0.5, (float)1);
 	listWall[47].setColor((float)0.5, (float)0.5, (float)0.5, (float)1);
-	
-
-
 	//Add the walls to the building
 	for (i=0; i<listWall.size();i++)
 		building->addFace(listWall[i]);
+
+	vector<Face> table1(3);
+	createTable(1.0, 1.20, 0.80,Vector2D(0.0,0.0),table1[0], table1[1], table1[2]);
+	building->addFace(table1[0]);
+	building->addFace(table1[1]);
+	building->addFace(table1[2]);
+
+	vector<Face> wardrobe1(5);
+	createWardrobe(2.0, 1.20, 0.80,Vector2D(0.0,0.0),wardrobe1[0], wardrobe1[1], wardrobe1[2],
+					wardrobe1[3], wardrobe1[4]);
+	building->addFace(wardrobe1[0]);
+	building->addFace(wardrobe1[1]);
+	building->addFace(wardrobe1[2]);
+	building->addFace(wardrobe1[3]);
+	building->addFace(wardrobe1[4]);
+	
 	world+=building;
 	StreamFile myfile(filename,false);
 	myfile.write(&world);
