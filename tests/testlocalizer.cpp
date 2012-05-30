@@ -56,6 +56,8 @@ public:
 				float x,y,z;
 				buffer>>x>>y>>z;
 				Pose3D initPose(x,y,z);
+				Transformation3D giro(0,0,0,0,0,-PI/2);
+				initPose*=giro;
 				localizer.initializeGaussian(initPose,0.001);
 				robot->setLocation(initPose);
 			}
@@ -144,7 +146,7 @@ public:
 			last=odom.pose;
 			double r,p,y;
 			inc.orientation.getRPY(r,p,y);
-			double noise=0.03;
+			double noise=0.05;
 			double m=inc.module();
 			Pose3D noisePose(m*sampleGaussian(0,noise),m*sampleGaussian(0,noise),0,
 							 0,0,m*sampleGaussian(0,noise));
@@ -154,7 +156,7 @@ public:
 							  0,0,0);*/
 		
 			odomNoise.pose*=inc; //odometry pose + inc?
-			odomNoise.pose*=noisePose;
+		//	odomNoise.pose*=noisePose;
 			localizer.move(odomNoise,noise*1,&real);
 		}
 		else 
@@ -165,7 +167,7 @@ public:
 	
 		if(robot->getLaserData(laserData))
 		{
-		//	localizer.observe(laserData);
+	//		localizer.observe(laserData);
 		}
 		else
 		{
@@ -196,7 +198,8 @@ public:
 						
 	void Timer(float time)
 	{
-	//	step();
+		float e;
+		step(e);
 		
 	//	cout<<"RealPose: "<<realPose<<endl;
 	//	robot->setLocation(correctedPose);

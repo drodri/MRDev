@@ -29,7 +29,7 @@ public:
 		traj.setPath(path);
 
 		manual=true;
-		robot->startLogging("log/building");
+		robot->startLogging("log/euitilab1");
 	}
 	void Draw(void)
 	{
@@ -132,7 +132,7 @@ int main(int argc,char* argv[])
 		robot=new Nemo;*/
 	mrcoreInit();
 	MobileRobot* robot=new Neo();
-	robot->connectClients("127.0.0.1",13000);
+	robot->connectClients("192.168.100.50",13008);
 //	robot->connectLog("log/columns");
 	MyGlutApp myApp("teleop",robot);
 	myApp.Run();
