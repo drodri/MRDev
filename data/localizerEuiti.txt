@@ -1,0 +1,8 @@
+numParticles:	50
+world: 		euitilab.world 
+robot: 		neo
+initPose: 	 1 8 0
+connect: 	log	log/euitilab1
+neff:		0.75
+		
+

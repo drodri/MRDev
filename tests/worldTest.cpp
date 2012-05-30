@@ -57,10 +57,10 @@ int main(int argc, char* argv[])
 	glutTimerFunc(100,OnTimer,0);
 	scene.init();
 
-//	string filename="euitilab.world";
-//	CreateWorldEuitiLab(filename);
-	string filename="building.world";
-	CreateWorldBuilding(filename);
+	string filename="euitilab.world";
+	CreateWorldEuitiLab(filename);
+//	string filename="building.world";
+//	CreateWorldBuilding(filename);
 	StreamFile myfile(filename,true);
 	myfile.read(&world);
 	

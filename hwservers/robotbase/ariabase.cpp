@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include <map>
 #include "mrcore/mrcore.h"
 #include "ariabase.h"
@@ -71,7 +72,7 @@ AriaBase::AriaBase(int argc, char** argv)
 
 		exit(1);
 	}
-//	laser->asyncConnect();
+	laser->blockingConnect();
  //	robot.runAsync(true);	
 	
 	robot.comInt(ArCommands::ENABLE, 1);
@@ -146,6 +147,7 @@ bool AriaBase::getData(LaserData& laserData)
 		value/=1000;
 		ranges.push_back(value);
 	}
+	reverse(ranges.begin(),ranges.end());
 	if(robotType==PATROLBOT)//Interpolation of blind readings from patrolbot
 	{
 		ranges[15]=(ranges[14]+ranges[16])/2.0;
