@@ -166,8 +166,6 @@ void OnKeyboardDown(unsigned char key, int x, int y)
 	
 	myrobot->move(speed,rotspeed);
 	pruebaLaser->updateSensorData();*/
-
-	scene.KeyDown(key);
 	glutPostRedisplay();	
 
 }
