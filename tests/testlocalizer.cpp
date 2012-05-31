@@ -19,6 +19,7 @@ public:
 //		scene.addObject(&world);
 		scene.SetViewPoint(35,160,25);	
 		va=vg=0;
+		useTimer=true;
 	}
 	virtual ~MyLocalizerApp()
 	{
@@ -125,6 +126,10 @@ public:
 		
 		return true;
 	}
+	void Reshape(int w,int h)
+	{
+		scene.setViewSize(0,0,w,h);
+	}
 	void Draw(void)
 	{
 		scene.Draw();
@@ -167,7 +172,7 @@ public:
 	
 		if(robot->getLaserData(laserData))
 		{
-	//		localizer.observe(laserData);
+			localizer.observe(laserData);
 		}
 		else
 		{
@@ -198,21 +203,19 @@ public:
 						
 	void Timer(float time)
 	{
-		float e;
-		step(e);
+		if(useTimer){
+			float e;
+			step(e);
+		}
 		
 	//	cout<<"RealPose: "<<realPose<<endl;
 	//	robot->setLocation(correctedPose);
 	}
 	void Key(unsigned char key)
 	{
-		if(key=='l')
-		{	
-			for(int i=0;i<10000;i++)
-			{
-				WheeledBaseSim* p=new Pioneer3ATSim();
-				delete p;
-			}
+		if(key=='m')
+		{
+			useTimer=!useTimer;
 		}
 		if(key=='p')
 		{
@@ -296,6 +299,7 @@ private:
 //	World world;
 	MobileRobot* robot;
 	Localizer localizer;
+	bool useTimer;
 };
 
 void printUsage();

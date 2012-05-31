@@ -28,6 +28,7 @@ public:
 	virtual void Draw(){}
 	virtual void MouseMove(int x,int y){}
 	virtual void MouseClick(int button,int state, int x,int y){}
+	virtual void Reshape(int w, int h){}
 
 	void Run();
 	void SetTimer(float time);

@@ -1,4 +1,4 @@
-numParticles:	50
+numParticles:	10
 world: 		euitilab.world 
 robot: 		neo
 initPose: 	 1 8 0
