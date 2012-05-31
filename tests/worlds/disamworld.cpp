@@ -26,58 +26,68 @@ void calculateTransformation(Vector2D ini, Vector2D end, double& width, double& 
 		//pared diagonal
 	}
 }
-void createTable(double height, double widht, double deep, Vector2D origin,
-					Face &lat1, Face &lat2, Face &plank)
+void createTable(double height, double widht, double deep, Vector2D origin, vector<Face> &table)
 {
-	plank.setBase(Transformation3D(origin.x,origin.y,height));
-	plank.addVertex(0.0,0.0);
-	plank.addVertex(0.0,widht);
-	plank.addVertex(deep,widht);
-	plank.addVertex(deep,0.0);
-	lat1.setBase(Transformation3D(origin.x,origin.y,0,X_AXIS,PI/2));
-	lat1.addVertex(0.0,0.0);
-	lat1.addVertex(0.0,height);
-	lat1.addVertex(deep,height);
-	lat1.addVertex(deep,0.0);
-	lat2=lat1;
-	lat2.setBase(Transformation3D(origin.x,origin.y+widht,0,X_AXIS,PI/2));
-	lat1.setColor(0.6,0.6,0.15,1);
-	lat2.setColor(0.6,0.6,0.15,1);
-	plank.setColor(0.6,0.6,0.15,1);
+	table.resize(3);
+	table[0].setBase(Transformation3D(origin.x,origin.y,height));
+	table[0].addVertex(0.0,0.0);
+	table[0].addVertex(0.0,widht);
+	table[0].addVertex(deep,widht);
+	table[0].addVertex(deep,0.0);
+	table[1].setBase(Transformation3D(origin.x,origin.y,0,X_AXIS,PI/2));
+	table[1].addVertex(0.0,0.0);
+	table[1].addVertex(0.0,height);
+	table[1].addVertex(deep,height);
+	table[1].addVertex(deep,0.0);
+	table[2]=table[1];
+	table[2].setBase(Transformation3D(origin.x,origin.y+widht,0,X_AXIS,PI/2));
+
+	table[0].setColor(0.6,0.6,0.15,1);
+	table[1].setColor(0.6,0.6,0.15,1);
+	table[2].setColor(0.6,0.6,0.15,1);
 }
 
-void createWardrobe(double height, double widht, double deep, Vector2D origin,
-					Face &lat1, Face &lat2, Face &lat3, Face &lat4, Face &lat5)
+void rotateTable(vector<Face> &table)
 {
-	lat1.setBase(Transformation3D(origin.x,origin.y,0,X_AXIS,PI/2));
-	lat1.addVertex(0.0,0.0);
-	lat1.addVertex(0.0,height);
-	lat1.addVertex(deep,height);
-	lat1.addVertex(deep,0.0);
+	double widht=(table[0].getMaxVertex()-table[0].getMinVertex()).y;
+	table[0].setBase(table[0].getBase()*Transformation3D(0,0,0,Z_AXIS,PI/2));
+	table[1].setBase(table[1].getBase()*Transformation3D(0,0,0,Y_AXIS,PI/2));
+	table[2].setBase(table[2].getBase()*Transformation3D(-widht,0,widht,Y_AXIS,PI/2));
+}
 
-	lat2=lat1;
-	lat2.setBase(Transformation3D(origin.x,origin.y+widht,0,X_AXIS,PI/2));
+void createWardrobe(double height, double widht, double deep, Vector2D origin, vector <Face> &wardrobe)
+					//Face &lat1, Face &lat2, Face &lat3, Face &lat4, Face &lat5)
+{
+	wardrobe.resize(5);
+	wardrobe[0].setBase(Transformation3D(origin.x,origin.y,0,X_AXIS,PI/2));
+	wardrobe[0].addVertex(0.0,0.0);
+	wardrobe[0].addVertex(0.0,height);
+	wardrobe[0].addVertex(deep,height);
+	wardrobe[0].addVertex(deep,0.0);
 
-	lat3.setBase(Transformation3D(origin.x,origin.y,height));
-	lat3.addVertex(0.0,0.0);
-	lat3.addVertex(0.0,widht);
-	lat3.addVertex(deep,widht);
-	lat3.addVertex(deep,0.0);
+	wardrobe[1]=wardrobe[0];
+	wardrobe[1].setBase(Transformation3D(origin.x,origin.y+widht,0,X_AXIS,PI/2));
 
-	lat4.setBase(Transformation3D(origin.x,origin.y,0,Y_AXIS,-PI/2));
-	lat4.addVertex(0.0,0.0);
-	lat4.addVertex(height,0.0);
-	lat4.addVertex(height,widht);
-	lat4.addVertex(0.0,widht);
+	wardrobe[2].setBase(Transformation3D(origin.x,origin.y,height));
+	wardrobe[2].addVertex(0.0,0.0);
+	wardrobe[2].addVertex(0.0,widht);
+	wardrobe[2].addVertex(deep,widht);
+	wardrobe[2].addVertex(deep,0.0);
 
-	lat5=lat4;
-	lat5.setBase(Transformation3D(origin.x+deep,origin.y,0,Y_AXIS,-PI/2));
+	wardrobe[3].setBase(Transformation3D(origin.x,origin.y,0,Y_AXIS,-PI/2));
+	wardrobe[3].addVertex(0.0,0.0);
+	wardrobe[3].addVertex(height,0.0);
+	wardrobe[3].addVertex(height,widht);
+	wardrobe[3].addVertex(0.0,widht);
 
-	lat1.setColor(0.5,0.5,0.5,1);
-	lat2.setColor(0.5,0.5,0.5,1);
-	lat3.setColor(0.5,0.5,0.5,1);
-	lat4.setColor(0.5,0.5,0.5,1);
-	lat5.setColor(0.5,0.5,0.5,1);
+	wardrobe[4]=wardrobe[3];
+	wardrobe[4].setBase(Transformation3D(origin.x+deep,origin.y,0,Y_AXIS,-PI/2));
+
+	wardrobe[0].setColor(0.5,0.5,0.5,1);
+	wardrobe[1].setColor(0.5,0.5,0.5,1);
+	wardrobe[2].setColor(0.5,0.5,0.5,1);
+	wardrobe[3].setColor(0.5,0.5,0.5,1);
+	wardrobe[4].setColor(0.5,0.5,0.5,1);
 }
 
 void CreateWorldDisamLab(string filename)
@@ -141,20 +151,188 @@ void CreateWorldDisamLab(string filename)
 	for (i=0; i<listWall.size();i++)
 		building->addFace(listWall[i]);
 
-	vector<Face> table1(3);
-	createTable(1.0, 1.20, 0.80,Vector2D(0.0,0.0),table1[0], table1[1], table1[2]);
-	building->addFace(table1[0]);
-	building->addFace(table1[1]);
-	building->addFace(table1[2]);
+	vector<Face> table1(3);	//Paloma's table
+	createTable(1.0, 1.20, 0.95,Vector2D(1.30,0.0),table1);
 
+	vector<Face> table2(3);	//Diego's table
+	createTable(1.0, 1.20, 0.95,Vector2D(1.30,1.20),table2);
+
+	vector<Face> table3(3);
+	createTable(1.0, 1.10, 0.95,Vector2D(1.30,3.05),table3);
+
+	vector<Face> table4(3);	//Julio's table
+	createTable(1.0, 1.20, 0.70,Vector2D(3.27,0.0),table4);
+
+	vector<Face> table5(3);	//Paloma's table
+	createTable(1.0, 1.10, 0.70,Vector2D(3.27,3.05),table5);
+
+	vector<Face> table6(3);	//Julian's table
+	createTable(1.0, 1.20, 0.70,Vector2D(4.91,0.0),table6);
+
+	vector<Face> table7(3);	//Urbano's table
+	createTable(1.0, 0.66, 0.70,Vector2D(4.91,1.20),table7);
+
+	vector<Face> table8(3);	//Alvaro's table
+	createTable(1.0, 1.10, 0.70,Vector2D(4.91,3.05),table8);
+
+	vector<Face> table9(3);
+	createTable(1.0, 1.80, 0.85,Vector2D(8.45,0.0),table9);
+
+	vector<Face> table10(3);
+	createTable(1.0, 1.20, 0.80,Vector2D(6.7,4.55),table10);
+
+	vector<Face> table11(3);
+	createTable(1.0, 1.20, 0.80,Vector2D(6.7,5.80),table11);
+
+	vector<Face> table12(3);
+	createTable(1.0, 1.20, 0.80,Vector2D(6.7,7.05),table12);
+
+	vector<Face> table13(3);
+	createTable(1.0, 1.20, 0.80,Vector2D(5.2,4.55),table13);
+
+	vector<Face> table14(3);
+	createTable(1.0, 1.20, 0.80,Vector2D(5.2,5.80),table14);
+
+	vector<Face> table15(3);
+	createTable(1.0, 1.20, 0.80,Vector2D(5.2,7.05),table15);
+
+	vector<Face> table16(3);
+	createTable(1.0, 1.50, 0.80,Vector2D(6.7,10.70),table16);
+	
+	vector<Face> table17(3);
+	createTable(1.0, 1.20, 0.80,Vector2D(6.7,12.25),table17);
+
+	vector<Face> table18(3);
+	createTable(1.0, 2.0, 0.80,Vector2D(6.5,9.65),table18);
+	rotateTable(table18);
+
+	vector<Face> table19(3);
+	createTable(1.0, 2.0, 0.80,Vector2D(2.90,9.65),table19);
+	rotateTable(table19);
+
+	vector<Face> table20(3);
+	createTable(1.0, 1.20, 0.80,Vector2D(3.2,4.55),table20);
+
+	vector<Face> table21(3);
+	createTable(1.0, 1.20, 0.80,Vector2D(3.2,5.80),table21);
+
+	vector<Face> table22(3);
+	createTable(1.0, 1.20, 0.80,Vector2D(3.2,7.05),table22);
+
+	vector<Face> table23(3);
+	createTable(1.0, 1.20, 0.80,Vector2D(2.35,4.55),table23);
+
+	vector<Face> table24(3);
+	createTable(1.0, 1.20, 0.80,Vector2D(2.35,5.80),table24);
+
+	vector<Face> table25(3);
+	createTable(1.0, 1.20, 0.80,Vector2D(2.35,7.05),table25);
+	
 	vector<Face> wardrobe1(5);
-	createWardrobe(2.0, 1.20, 0.80,Vector2D(0.0,0.0),wardrobe1[0], wardrobe1[1], wardrobe1[2],
-					wardrobe1[3], wardrobe1[4]);
-	building->addFace(wardrobe1[0]);
-	building->addFace(wardrobe1[1]);
-	building->addFace(wardrobe1[2]);
-	building->addFace(wardrobe1[3]);
-	building->addFace(wardrobe1[4]);
+	createWardrobe(2.0, 1.00, 0.50,Vector2D(8.80,1.82),wardrobe1);
+	
+	vector<Face> wardrobe2(5);	//lockers
+	createWardrobe(2.20, 0.50, 1.35,Vector2D(5.66,3.65),wardrobe2);
+	
+	vector<Face> wardrobe3(5);
+	createWardrobe(2.20, 0.85, 0.45,Vector2D(9.75,2.20),wardrobe3);
+	
+	vector<Face> wardrobe4(5);
+	createWardrobe(2.20, 0.90, 0.45,Vector2D(9.75,1.25),wardrobe4);
+
+	vector<Face> wardrobe5(5);
+	createWardrobe(2.20, 0.85, 0.5,Vector2D(8.7,6.5),wardrobe5);
+
+	vector<Face> wardrobe6(5);
+	createWardrobe(2.20, 0.85, 0.5,Vector2D(8.7,7.4),wardrobe6);
+
+	vector<Face> wardrobe7(5);
+	createWardrobe(2.20, 0.85, 0.5,Vector2D(8.7,8.3),wardrobe7);
+
+	vector<Face> wardrobe8(5);
+	createWardrobe(2.20, 1.20, 0.5,Vector2D(8.7,9.2),wardrobe8);
+
+	vector<Face> wardrobe9(5);
+	createWardrobe(2.20, 0.8, 0.5,Vector2D(8.7,10.45),wardrobe9);
+
+	vector<Face> wardrobe10(5);
+	createWardrobe(2.20, 0.95, 0.5,Vector2D(8.7,11.30),wardrobe10);
+
+	vector<Face> wardrobe11(5);
+	createWardrobe(2.20, 0.95, 0.5,Vector2D(8.7,12.30),wardrobe11);
+
+	vector<Face> wardrobe12(5);
+	createWardrobe(2.20, 0.85, 0.5,Vector2D(8.7,13.30),wardrobe12);
+
+	vector<Face> wardrobe13(5);
+	createWardrobe(2.20, 0.50, 0.5,Vector2D(8.7,14.20),wardrobe13);
+
+	vector<Face> wardrobe14(5);
+	createWardrobe(2.50, 0.75, 1.90,Vector2D(5.8,15.30),wardrobe14);
+
+	vector<Face> wardrobe15(5);	//robot
+	createWardrobe(1.20, 1.0, 1.0,Vector2D(6.5,9.65),wardrobe15);
+
+	vector<Face> wardrobe16(5);
+	createWardrobe(1.50, 0.45, 1.20,Vector2D(6.3,13.5),wardrobe16);
+	
+	vector<Face> wardrobe17(5);
+	createWardrobe(1.0, 0.50, 1.65,Vector2D(2.35,8.3),wardrobe17);
+
+	vector<Face> wardrobe18(5);
+	createWardrobe(1.20, 0.80, 1.50,Vector2D(2.95,9.65),wardrobe18);
+
+	for (int i=0; i<3; i++)
+	{
+		building->addFace(table1[i]);
+		building->addFace(table2[i]);
+		building->addFace(table3[i]);
+		building->addFace(table4[i]);
+		building->addFace(table5[i]);
+		building->addFace(table6[i]);
+		building->addFace(table7[i]);
+		building->addFace(table8[i]);
+		building->addFace(table9[i]);
+		building->addFace(table10[i]);
+		building->addFace(table11[i]);
+		building->addFace(table12[i]);
+		building->addFace(table13[i]);
+		building->addFace(table14[i]);
+		building->addFace(table15[i]);
+		building->addFace(table16[i]);
+		building->addFace(table17[i]);
+		building->addFace(table18[i]);
+		building->addFace(table19[i]);
+		building->addFace(table20[i]);
+		building->addFace(table21[i]);
+		building->addFace(table22[i]);
+		building->addFace(table23[i]);
+		building->addFace(table24[i]);
+		building->addFace(table25[i]);
+
+	}
+
+	for (int i=0; i<5; i++)
+	{
+		building->addFace(wardrobe1[i]);
+		building->addFace(wardrobe2[i]);
+		building->addFace(wardrobe3[i]);
+		building->addFace(wardrobe4[i]);
+		building->addFace(wardrobe5[i]);
+		building->addFace(wardrobe6[i]);
+		building->addFace(wardrobe7[i]);
+		building->addFace(wardrobe8[i]);
+		building->addFace(wardrobe9[i]);
+		building->addFace(wardrobe10[i]);
+		building->addFace(wardrobe11[i]);
+		building->addFace(wardrobe12[i]);
+		building->addFace(wardrobe13[i]);
+		building->addFace(wardrobe14[i]);
+		building->addFace(wardrobe15[i]);
+		building->addFace(wardrobe16[i]);
+		building->addFace(wardrobe17[i]);
+		building->addFace(wardrobe18[i]);
+	}
 	
 	world+=building;
 	StreamFile myfile(filename,false);
