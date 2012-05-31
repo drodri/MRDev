@@ -24,6 +24,14 @@ void OnDraw(void)
 	//no borrar esta linea ni poner nada despues
 	glutSwapBuffers();
 }
+void OnReshape(int w, int h)
+{
+	if(theApp)
+		theApp->Reshape(w,h);
+
+	//no borrar esta linea ni poner nada despues
+	glutSwapBuffers();
+}
 void OnKeyboardDown(unsigned char key, int x_t, int y_t)
 {
 	if(theApp)
@@ -81,6 +89,7 @@ GlutApp::GlutApp(string name)
 		theApp=this;
 		//Registrar los callbacks
 		glutDisplayFunc(OnDraw);
+		glutReshapeFunc(OnReshape); 
 		glutTimerFunc(25,OnTimer,0);//le decimos que dentro de 25ms llame 1 vez a la funcion OnTimer()
 		glutKeyboardFunc(OnKeyboardDown);
 		glutSpecialFunc(OnSpecialKeyboardDown);
