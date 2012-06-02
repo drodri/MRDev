@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
 //	CreateWorldEuitiLab(filename);
 //	string filename="building.world";
 //	CreateWorldBuilding(filename);
-	string filename="disamlab.world";
+	string filename="data//disamLab.world";
 	CreateWorldDisamLab(filename);
 	StreamFile myfile(filename,true);
 	myfile.read(&world);

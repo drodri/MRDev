@@ -1,0 +1,4 @@
+world: disamLab.world
+robots: 1
+neo 13000 3.25 2.0 0
+persons: 0

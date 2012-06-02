@@ -150,6 +150,76 @@ void CreateWorldDisamLab(string filename)
 	//Add the walls to the building
 	for (i=0; i<listWall.size();i++)
 		building->addFace(listWall[i]);
+	//double a=8.45,b=29.33;
+	double a=0.0,b=0.0;
+	vector<Face> stairs(1);
+	stairs[0].setBase(Transformation3D(8.45-a,29.33-b,0,Y_AXIS,-PI/2));
+	stairs[0].addVertex(0.00,0.00);
+	stairs[0].addVertex(0.17,0.00);
+	stairs[0].addVertex(0.17,0.30);
+	stairs[0].addVertex(0.34,0.30);
+	stairs[0].addVertex(0.34,0.60);
+	stairs[0].addVertex(0.51,0.60);
+	stairs[0].addVertex(0.51,0.90);
+	stairs[0].addVertex(0.68,0.90);
+	stairs[0].addVertex(0.68,1.20);
+	stairs[0].addVertex(0.85,1.20);
+	stairs[0].addVertex(0.85,1.50);
+	stairs[0].addVertex(1.02,1.50);
+	stairs[0].addVertex(1.02,1.80);
+	stairs[0].addVertex(1.19,1.80);
+	stairs[0].addVertex(1.19,2.10);
+	stairs[0].addVertex(1.36,2.10);
+	stairs[0].addVertex(1.36,2.40);
+	stairs[0].addVertex(1.53,2.40);
+	stairs[0].addVertex(1.53,2.70);
+	stairs[0].addVertex(1.70,2.70);
+	stairs[0].addVertex(1.70,3.00);
+	stairs[0].addVertex(1.87,3.00);
+	stairs[0].addVertex(1.87,3.30);
+	stairs[0].addVertex(0.0,3.30);
+	int tam=stairs.size();
+	for(i=0;i<=10;i++)
+	{
+		stairs.push_back(Face());
+		stairs[i+tam].setBase(Transformation3D(8.45-a,29.33+(i*0.30)-b,(i+1)*0.17));
+		stairs[i+tam].addVertex(0.0,0.0);
+		stairs[i+tam].addVertex(1.1,0.0);
+		stairs[i+tam].addVertex(1.1,0.30);
+		stairs[i+tam].addVertex(0.0,0.30);
+	}
+	tam=stairs.size();
+	for(i=0;i<=10;i++)
+	{
+		stairs.push_back(Face());
+		stairs[i+tam].setBase(Transformation3D(8.45-a,29.33+(i*0.30)-b,i*0.17,X_AXIS,PI/2));
+		stairs[i+tam].addVertex(0.0,0.0);
+		stairs[i+tam].addVertex(1.1,0.0);
+		stairs[i+tam].addVertex(1.1,0.17);
+		stairs[i+tam].addVertex(0.0,0.17);
+	}
+
+	stairs.push_back(Face());
+	tam=stairs.size();
+	stairs[tam-1].setBase(Transformation3D(8.45,32.63,0,X_AXIS,PI/2));
+	stairs[tam-1].addVertex(0.0,0.0);
+	stairs[tam-1].addVertex(-1.55,0.0);
+	stairs[tam-1].addVertex(-1.55,1.87);
+	stairs[tam-1].addVertex(0.0,1.87);
+
+	stairs.push_back(Face());
+	stairs[tam].setBase(Transformation3D(9.55,33.75,1.87));
+	stairs[tam].addVertex(0.0,0.0);
+	stairs[tam].addVertex(-2.65,0.0);
+	stairs[tam].addVertex(-2.65,-1.10);
+	stairs[tam].addVertex(0.0,-1.10);
+
+	for(i=0;i<stairs.size();i++)
+		building->addFace(stairs[i]);
+
+
+
+	building->addFace(stairs[0]);
 
 	vector<Face> table1(3);	//Paloma's table
 	createTable(1.0, 1.20, 0.95,Vector2D(1.30,0.0),table1);
@@ -227,6 +297,35 @@ void CreateWorldDisamLab(string filename)
 
 	vector<Face> table25(3);
 	createTable(1.0, 1.20, 0.80,Vector2D(2.35,7.05),table25);
+
+	for (int i=0; i<3; i++)
+	{
+		building->addFace(table1[i]);
+		building->addFace(table2[i]);
+		building->addFace(table3[i]);
+		building->addFace(table4[i]);
+		building->addFace(table5[i]);
+		building->addFace(table6[i]);
+		building->addFace(table7[i]);
+		building->addFace(table8[i]);
+		building->addFace(table9[i]);
+		building->addFace(table10[i]);
+		building->addFace(table11[i]);
+		building->addFace(table12[i]);
+		building->addFace(table13[i]);
+		building->addFace(table14[i]);
+		building->addFace(table15[i]);
+		building->addFace(table16[i]);
+		building->addFace(table17[i]);
+		building->addFace(table18[i]);
+		building->addFace(table19[i]);
+		building->addFace(table20[i]);
+		building->addFace(table21[i]);
+		building->addFace(table22[i]);
+		building->addFace(table23[i]);
+		building->addFace(table24[i]);
+		building->addFace(table25[i]);
+	}
 	
 	vector<Face> wardrobe1(5);
 	createWardrobe(2.0, 1.00, 0.50,Vector2D(8.80,1.82),wardrobe1);
@@ -282,35 +381,23 @@ void CreateWorldDisamLab(string filename)
 	vector<Face> wardrobe18(5);
 	createWardrobe(1.20, 0.80, 1.50,Vector2D(2.95,9.65),wardrobe18);
 
-	for (int i=0; i<3; i++)
-	{
-		building->addFace(table1[i]);
-		building->addFace(table2[i]);
-		building->addFace(table3[i]);
-		building->addFace(table4[i]);
-		building->addFace(table5[i]);
-		building->addFace(table6[i]);
-		building->addFace(table7[i]);
-		building->addFace(table8[i]);
-		building->addFace(table9[i]);
-		building->addFace(table10[i]);
-		building->addFace(table11[i]);
-		building->addFace(table12[i]);
-		building->addFace(table13[i]);
-		building->addFace(table14[i]);
-		building->addFace(table15[i]);
-		building->addFace(table16[i]);
-		building->addFace(table17[i]);
-		building->addFace(table18[i]);
-		building->addFace(table19[i]);
-		building->addFace(table20[i]);
-		building->addFace(table21[i]);
-		building->addFace(table22[i]);
-		building->addFace(table23[i]);
-		building->addFace(table24[i]);
-		building->addFace(table25[i]);
+	vector<Face> wardrobe19(5);
+	createWardrobe(2.20, 1.20, 0.50,Vector2D(8.90,16.20),wardrobe19);
 
-	}
+	vector<Face> wardrobe20(5);
+	createWardrobe(2.20, 0.95, 0.50,Vector2D(8.90,17.95),wardrobe20);
+
+	vector<Face> wardrobe21(5);
+	createWardrobe(2.20, 0.95, 0.50,Vector2D(8.90,18.95),wardrobe21);
+
+	vector<Face> wardrobe22(5);
+	createWardrobe(1.70, 0.80, 0.70,Vector2D(8.90,19.95),wardrobe22);
+
+	vector<Face> wardrobe23(5);
+	createWardrobe(2.20, 0.74, 0.50,Vector2D(6.9,29.81),wardrobe23);
+
+	vector<Face> wardrobe24(5);
+	createWardrobe(1.0, 0.54, 0.15,Vector2D(6.9,28.71),wardrobe24);
 
 	for (int i=0; i<5; i++)
 	{
@@ -332,6 +419,12 @@ void CreateWorldDisamLab(string filename)
 		building->addFace(wardrobe16[i]);
 		building->addFace(wardrobe17[i]);
 		building->addFace(wardrobe18[i]);
+		building->addFace(wardrobe19[i]);
+		building->addFace(wardrobe20[i]);
+		building->addFace(wardrobe21[i]);
+		building->addFace(wardrobe22[i]);
+		building->addFace(wardrobe23[i]);
+		building->addFace(wardrobe24[i]);
 	}
 	
 	world+=building;
