@@ -26,7 +26,7 @@ void calculateTransformation(Vector2D ini, Vector2D end, double& width, double& 
 		//pared diagonal
 	}
 }
-void createTable(double height, double widht, double deep, Vector2D origin, vector<Face> &table)
+void createTable(double height, double widht, double deep, Vector2D origin, vector<Face> &table, bool tablon=false)
 {
 	table.resize(3);
 	table[0].setBase(Transformation3D(origin.x,origin.y,height));
@@ -45,6 +45,16 @@ void createTable(double height, double widht, double deep, Vector2D origin, vect
 	table[0].setColor(0.6,0.6,0.15,1);
 	table[1].setColor(0.6,0.6,0.15,1);
 	table[2].setColor(0.6,0.6,0.15,1);
+	if (tablon)
+	{
+		table.push_back(Face());
+		table[3].setBase(Transformation3D(origin.x+deep-0.10,origin.y,0.20,Y_AXIS,-PI/2));
+		table[3].addVertex(0.0,0.0);
+		table[3].addVertex(height-0.20,0.0);
+		table[3].addVertex(height-0.20,widht);
+		table[3].addVertex(0.0,widht);
+		table[3].setColor(0.6,0.6,0.15,1);
+	}
 }
 
 void rotateTable(vector<Face> &table)
@@ -217,33 +227,29 @@ void CreateWorldDisamLab(string filename)
 	for(i=0;i<stairs.size();i++)
 		building->addFace(stairs[i]);
 
-
-
-	building->addFace(stairs[0]);
-
 	vector<Face> table1(3);	//Paloma's table
-	createTable(1.0, 1.20, 0.95,Vector2D(1.30,0.0),table1);
+	createTable(1.0, 1.20, 0.95,Vector2D(1.30,0.0),table1,true);
 
 	vector<Face> table2(3);	//Diego's table
-	createTable(1.0, 1.20, 0.95,Vector2D(1.30,1.20),table2);
+	createTable(1.0, 1.20, 0.95,Vector2D(1.30,1.20),table2,true);
 
 	vector<Face> table3(3);
-	createTable(1.0, 1.10, 0.95,Vector2D(1.30,3.05),table3);
+	createTable(1.0, 1.10, 0.95,Vector2D(1.30,3.05),table3,true);
 
 	vector<Face> table4(3);	//Julio's table
-	createTable(1.0, 1.20, 0.70,Vector2D(3.27,0.0),table4);
+	createTable(1.0, 1.20, 0.70,Vector2D(3.27,0.0),table4,true);
 
 	vector<Face> table5(3);	//Paloma's table
-	createTable(1.0, 1.10, 0.70,Vector2D(3.27,3.05),table5);
+	createTable(1.0, 1.10, 0.70,Vector2D(3.27,3.05),table5,true);
 
 	vector<Face> table6(3);	//Julian's table
-	createTable(1.0, 1.20, 0.70,Vector2D(4.91,0.0),table6);
+	createTable(1.0, 1.20, 0.70,Vector2D(4.91,0.0),table6,true);
 
 	vector<Face> table7(3);	//Urbano's table
-	createTable(1.0, 0.66, 0.70,Vector2D(4.91,1.20),table7);
+	createTable(1.0, 0.66, 0.70,Vector2D(4.91,1.20),table7,true);
 
 	vector<Face> table8(3);	//Alvaro's table
-	createTable(1.0, 1.10, 0.70,Vector2D(4.91,3.05),table8);
+	createTable(1.0, 1.10, 0.70,Vector2D(4.91,3.05),table8,true);
 
 	vector<Face> table9(3);
 	createTable(1.0, 1.80, 0.85,Vector2D(8.45,0.0),table9);
@@ -326,6 +332,15 @@ void CreateWorldDisamLab(string filename)
 		building->addFace(table24[i]);
 		building->addFace(table25[i]);
 	}
+	building->addFace(table1[3]);
+	building->addFace(table2[3]);
+	building->addFace(table3[3]);
+	building->addFace(table4[3]);
+	building->addFace(table5[3]);
+	building->addFace(table6[3]);
+	building->addFace(table7[3]);
+	building->addFace(table8[3]);
+	//building->addFace(table1[3]);
 	
 	vector<Face> wardrobe1(5);
 	createWardrobe(2.0, 1.00, 0.50,Vector2D(8.80,1.82),wardrobe1);
