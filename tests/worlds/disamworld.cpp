@@ -211,11 +211,11 @@ void CreateWorldDisamLab(string filename)
 
 	stairs.push_back(Face());
 	tam=stairs.size();
-	stairs[tam-1].setBase(Transformation3D(8.45,32.63,0,X_AXIS,PI/2));
+	stairs[tam-1].setBase(Transformation3D(8.45,32.63,0,Y_AXIS,-PI/2));
 	stairs[tam-1].addVertex(0.0,0.0);
-	stairs[tam-1].addVertex(-1.55,0.0);
-	stairs[tam-1].addVertex(-1.55,1.87);
-	stairs[tam-1].addVertex(0.0,1.87);
+	stairs[tam-1].addVertex(1.87,0.0);
+	stairs[tam-1].addVertex(1.87,1.10);
+	stairs[tam-1].addVertex(0.0,1.10);
 
 	stairs.push_back(Face());
 	stairs[tam].setBase(Transformation3D(9.55,33.75,1.87));
