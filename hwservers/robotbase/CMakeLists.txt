@@ -21,7 +21,7 @@ ADD_EXECUTABLE(ariaRobotServer ariarobotserver.cpp ariabase.cpp )
 IF(WIN32)
 	TARGET_LINK_LIBRARIES(ariaRobotServer mrcore Aria)
 ELSE(WIN32)
-	TARGET_LINK_LIBRARIES(ariaRobotServer mrcore Aria pthread rt)
+	TARGET_LINK_LIBRARIES(ariaRobotServer mrcore Aria pthread rt GL GLU)
 
 ENDIF(WIN32)
 

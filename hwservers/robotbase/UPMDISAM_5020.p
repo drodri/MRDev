@@ -89,26 +89,13 @@ LatVelMax 0              ; maximum desired lateral velocity for the robot
 LatAccel 0               ; lateral acceleration
 LatDecel 0               ; lateral deceleration
 
-Section GPS parameters
-;SectionFlags for GPS parameters: 
-GPSPX 0                  ; x location of gps receiver antenna on robot, mm
-GPSPY 0                  ; y location of gps receiver antenna on robot, mm
-GPSType standard         ; type of gps receiver (trimble, novatel, standard)
-GPSPort COM2             ; port the gps is on
-GPSBaud 9600             ; gps baud rate (9600, 19200, 38400, etc.)
-
-Section Compass parameters
-;SectionFlags for Compass parameters: 
-CompassType robot        ; type of compass: robot (typical configuration), or
-                         ; serialTCM (computer serial port)
-CompassPort              ; serial port name, if CompassType is serialTCM
 
 Section Laser parameters
 ;SectionFlags for Laser parameters: 
 LaserType lms2xx         ; type of laser
 LaserPortType serial     ; type of port the laser is on
 LaserPort /dev/ttyS2           ; port the laser is on
-LaserAutoConnect true   ; if the laser connector should autoconnect this 
+LaserAutoConnect false   ; if the laser connector should autoconnect this 
 laser
                          ; or not
 LaserFlipped true        ; if the laser is upside-down or not
@@ -131,11 +118,11 @@ LaserEndDegrees          ; start degrees for the sensor (leave blank for
                          ; default, use this to constrain the range) (double)
 LaserDegreesChoice       ; degrees choice for the sensor (leave blank for
                          ; default, use this to constrain the range)
-LaserIncrement   one     ; Increment for the sensor (leave blank for default,
+LaserIncrement		    ; Increment for the sensor (leave blank for default,
                          ; use this to have a custom increment) (double)
 LaserIncrementChoice     ; Increment for the sensor (leave blank for default,
                          ; use this to have a larger increment)
-LaserUnitsChoice 1mm     ; Units for the sensor (leave blank for default, use
+LaserUnitsChoice	     ; Units for the sensor (leave blank for default, use
                          ; this to have a larger units)
 LaserReflectorBitsChoice  ; ReflectorBits for the sensor (leave blank for
                          ; default, use this to have a larger units)

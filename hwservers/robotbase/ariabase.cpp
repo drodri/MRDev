@@ -51,7 +51,7 @@ AriaBase::AriaBase(int argc, char** argv)
 
 	map< int, ArLaser * >*  myMap= robot.getLaserMap();
 	map<int, ArLaser*>::iterator it;
-	cout<<"SIze: "<<myMap->size()<<endl;
+	cout<<"Num lasers: "<<myMap->size()<<endl;
 	for(	it= myMap->begin();it!=myMap->end();it++)
 	{
 		cout<<"Laser: "<<(*it).first<<" laser: "<<endl;
