@@ -14,10 +14,11 @@ int main(int argc, char** argv)
 	{
 		Sleep(500);
 		robot.watchdog();
-	//	LaserData data;
-	//	robot.getData(data);
-		//if(data.getRanges().size()>270)
-		//cout<<"Medida: "<<data.getRanges()[270]<<endl;
+		LaserData data;
+		robot.getData(data);
+		cout<<"MEdidas: "<<data.getRanges().size()<<endl;
+		if(data.getRanges().size()>0)
+			cout<<"Medida: "<<data.getRanges()[data.getRanges().size()/2]<<endl;
 	}	
 
 	server.close();
