@@ -26,13 +26,13 @@ void calculateTransformation(Vector2D ini, Vector2D end, double& width, double& 
 		//pared diagonal
 	}
 }
-void createTable(double height, double widht, double deep, Vector2D origin, vector<Face> &table, bool tablon=false)
+void createTable(double height, double width, double deep, Vector2D origin, vector<Face> &table, bool tablon=false)
 {
 	table.resize(3);
 	table[0].setBase(Transformation3D(origin.x,origin.y,height));
 	table[0].addVertex(0.0,0.0);
-	table[0].addVertex(0.0,widht);
-	table[0].addVertex(deep,widht);
+	table[0].addVertex(0.0,width);
+	table[0].addVertex(deep,width);
 	table[0].addVertex(deep,0.0);
 	table[1].setBase(Transformation3D(origin.x,origin.y,0,X_AXIS,PI/2));
 	table[1].addVertex(0.0,0.0);
@@ -40,7 +40,7 @@ void createTable(double height, double widht, double deep, Vector2D origin, vect
 	table[1].addVertex(deep,height);
 	table[1].addVertex(deep,0.0);
 	table[2]=table[1];
-	table[2].setBase(Transformation3D(origin.x,origin.y+widht,0,X_AXIS,PI/2));
+	table[2].setBase(Transformation3D(origin.x,origin.y+width,0,X_AXIS,PI/2));
 
 	table[0].setColor(0.6,0.6,0.15,1);
 	table[1].setColor(0.6,0.6,0.15,1);
@@ -51,22 +51,21 @@ void createTable(double height, double widht, double deep, Vector2D origin, vect
 		table[3].setBase(Transformation3D(origin.x+deep-0.10,origin.y,0.20,Y_AXIS,-PI/2));
 		table[3].addVertex(0.0,0.0);
 		table[3].addVertex(height-0.20,0.0);
-		table[3].addVertex(height-0.20,widht);
-		table[3].addVertex(0.0,widht);
+		table[3].addVertex(height-0.20,width);
+		table[3].addVertex(0.0,width);
 		table[3].setColor(0.6,0.6,0.15,1);
 	}
 }
 
 void rotateTable(vector<Face> &table)
 {
-	double widht=(table[0].getMaxVertex()-table[0].getMinVertex()).y;
+	double width=(table[0].getMaxVertex()-table[0].getMinVertex()).y;
 	table[0].setBase(table[0].getBase()*Transformation3D(0,0,0,Z_AXIS,PI/2));
 	table[1].setBase(table[1].getBase()*Transformation3D(0,0,0,Y_AXIS,PI/2));
-	table[2].setBase(table[2].getBase()*Transformation3D(-widht,0,widht,Y_AXIS,PI/2));
+	table[2].setBase(table[2].getBase()*Transformation3D(-width,0,width,Y_AXIS,PI/2));
 }
 
-void createWardrobe(double height, double widht, double deep, Vector2D origin, vector <Face> &wardrobe)
-					//Face &lat1, Face &lat2, Face &lat3, Face &lat4, Face &lat5)
+void createWardrobe(double height, double width, double deep, Vector2D origin, vector <Face> &wardrobe)
 {
 	wardrobe.resize(5);
 	wardrobe[0].setBase(Transformation3D(origin.x,origin.y,0,X_AXIS,PI/2));
@@ -76,19 +75,19 @@ void createWardrobe(double height, double widht, double deep, Vector2D origin, v
 	wardrobe[0].addVertex(deep,0.0);
 
 	wardrobe[1]=wardrobe[0];
-	wardrobe[1].setBase(Transformation3D(origin.x,origin.y+widht,0,X_AXIS,PI/2));
+	wardrobe[1].setBase(Transformation3D(origin.x,origin.y+width,0,X_AXIS,PI/2));
 
 	wardrobe[2].setBase(Transformation3D(origin.x,origin.y,height));
 	wardrobe[2].addVertex(0.0,0.0);
-	wardrobe[2].addVertex(0.0,widht);
-	wardrobe[2].addVertex(deep,widht);
+	wardrobe[2].addVertex(0.0,width);
+	wardrobe[2].addVertex(deep,width);
 	wardrobe[2].addVertex(deep,0.0);
 
 	wardrobe[3].setBase(Transformation3D(origin.x,origin.y,0,Y_AXIS,-PI/2));
 	wardrobe[3].addVertex(0.0,0.0);
 	wardrobe[3].addVertex(height,0.0);
-	wardrobe[3].addVertex(height,widht);
-	wardrobe[3].addVertex(0.0,widht);
+	wardrobe[3].addVertex(height,width);
+	wardrobe[3].addVertex(0.0,width);
 
 	wardrobe[4]=wardrobe[3];
 	wardrobe[4].setBase(Transformation3D(origin.x+deep,origin.y,0,Y_AXIS,-PI/2));
@@ -160,10 +159,8 @@ void CreateWorldDisamLab(string filename)
 	//Add the walls to the building
 	for (i=0; i<listWall.size();i++)
 		building->addFace(listWall[i]);
-	//double a=8.45,b=29.33;
-	double a=0.0,b=0.0;
 	vector<Face> stairs(1);
-	stairs[0].setBase(Transformation3D(8.45-a,29.33-b,0,Y_AXIS,-PI/2));
+	stairs[0].setBase(Transformation3D(8.45,29.33,0,Y_AXIS,-PI/2));
 	stairs[0].addVertex(0.00,0.00);
 	stairs[0].addVertex(0.17,0.00);
 	stairs[0].addVertex(0.17,0.30);
@@ -192,7 +189,7 @@ void CreateWorldDisamLab(string filename)
 	for(i=0;i<=10;i++)
 	{
 		stairs.push_back(Face());
-		stairs[i+tam].setBase(Transformation3D(8.45-a,29.33+(i*0.30)-b,(i+1)*0.17));
+		stairs[i+tam].setBase(Transformation3D(8.45,29.33+(i*0.30),(i+1)*0.17));
 		stairs[i+tam].addVertex(0.0,0.0);
 		stairs[i+tam].addVertex(1.1,0.0);
 		stairs[i+tam].addVertex(1.1,0.30);
@@ -202,7 +199,7 @@ void CreateWorldDisamLab(string filename)
 	for(i=0;i<=10;i++)
 	{
 		stairs.push_back(Face());
-		stairs[i+tam].setBase(Transformation3D(8.45-a,29.33+(i*0.30)-b,i*0.17,X_AXIS,PI/2));
+		stairs[i+tam].setBase(Transformation3D(8.45,29.33+(i*0.30),i*0.17,X_AXIS,PI/2));
 		stairs[i+tam].addVertex(0.0,0.0);
 		stairs[i+tam].addVertex(1.1,0.0);
 		stairs[i+tam].addVertex(1.1,0.17);
