@@ -135,10 +135,15 @@ bool AriaBase::getData(LaserData& laserData)
 	vector<ArSensorReading>* v2=laser->getRawReadingsAsVector();
 	double startDeg=laser->getStartDegrees();
 	double incDeg=laser->getIncrement();
+	//cout<<"Start "<<startDeg<<" inc "<<incDeg<<endl;
 	if(robotType==PATROLBOT)
 		laserData.setProperties(-90*DEG2RAD, 1*DEG2RAD, v2->size());
 	else //Pionner with LMS100
 		laserData.setProperties(-135*DEG2RAD,0.5*DEG2RAD,v2->size());
+
+//NEMO
+	laserData.setProperties(-90*DEG2RAD, 1*DEG2RAD, v2->size());
+
 	vector<double> ranges;
 	for(int i=0;i<v2->size();i++)
 	{

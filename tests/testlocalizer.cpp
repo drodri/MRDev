@@ -58,7 +58,7 @@ public:
 				buffer>>x>>y>>z;
 				Pose3D initPose(x,y,z);
 				Transformation3D giro(0,0,0,0,0,-PI/2);
-				initPose*=giro;
+				//initPose*=giro;
 				localizer.initializeGaussian(initPose,0.001);
 				robot->setLocation(initPose);
 			}
@@ -70,6 +70,8 @@ public:
 					robot=new Neo();
 				else if(robotName=="doris")
 					robot=new Doris();
+				else if(robotName=="nemo")
+					robot=new Nemo();
 				else
 				{
 					LOG_ERROR("Robot not defined: "<<robotName);
@@ -172,7 +174,7 @@ public:
 	
 		if(robot->getLaserData(laserData))
 		{
-		//	localizer.observe(laserData);
+			localizer.observe(laserData);
 		}
 		else
 		{
