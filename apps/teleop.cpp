@@ -26,8 +26,7 @@ public:
 		//path.push_back(vector2d(x+20,y+10));
 		//path.push_back(vector2d(x,y+10));
 		//path.push_back(vector2d(x,y));
-		//traj.setpath(path);
-
+		
 		path.push_back(Vector2D(8,8));
 		path.push_back(Vector2D(8,1));
 		path.push_back(Vector2D(1,1));
@@ -44,7 +43,8 @@ public:
 		path.push_back(Vector2D(1,8));
 		//Tercer piso
 		path.push_back(Vector2D(8,8));
-
+		traj.setPath(path);
+		
 		manual=true;
 		//robot->startLogging("log/building");
 	}
@@ -66,58 +66,50 @@ public:
 
 		//The odometry is full 3D, lets handle it only in 2D, as a Pose (x, y, theta)
 
-		//Transformation3D pose=odom.pose;
-		//double roll,pitch,yaw;
-		//pose.orientation.getRPY(roll,pitch,yaw);
-		//Pose2D robotPose(pose.position.x,pose.position.y,yaw);
+		Transformation3D pose=odom.pose;
+		double roll,pitch,yaw;
+		pose.orientation.getRPY(roll,pitch,yaw);
+		Pose2D robotPose(pose.position.x,pose.position.y,yaw);
 
 		if(manual)
 			robot->move(va,vg);
 		else
 		{
-			//traj.setData(robotPose);
-			//traj.getSpeed(va,vg);
-
-			//control.setCommand(va,vg);
-			//control.setData(laserData);
+			/*traj.setData(robotPose);
+			traj.getSpeed(va,vg);
+			control.setCommand(va,vg);
+			control.setData(laserData);*/
 			float va2=va,vg2=vg;
-			//control.getSpeed(va2,vg2);	
-			automatic(va2,vg2);
+			realPose.orientation.getRPY(roll,pitch,yaw);
+			Pose2D robotPose2(realPose.position.x,realPose.position.y,yaw);
+			modeAutomatic(robotPose2, va2,vg2);
 			robot->move(va2,vg2);
 		}
 	}
-	void automatic(float& sp, float& rt)
+	void modeAutomatic(Pose2D robotPose, float& sp, float& rt)
 	{
-		//Obtencion de la posicion y orientación real
-		Pose3D realPose;
-		double roll,pitch,yaw;
-		robot->getPose3D(realPose);
-		realPose.orientation.getRPY(roll,pitch,yaw);
-		//Vector de error y su angulo
-		Vector2D error=path.at(0)-Vector2D(realPose.position.x,realPose.position.y);
+		Vector2D error=path.at(0)-robotPose.position();
 		double angle=error.argument();
-		//Normalización de Yaw entre -PI y +PI
-		if(yaw>PI)
-			yaw-=2*PI;
-		else if(yaw<-PI)
-			yaw+=2*PI;
-		//Normalización del angulo del vector error entre -PI y +PI
+		//standardization of angles between -PI y +PI
+		if(robotPose.theta>PI)
+			robotPose.theta=robotPose.theta-2*PI;
+		else if(robotPose.theta<-PI)
+			robotPose.theta=robotPose.theta+2*PI;
 		if(angle>PI)
 			angle-=2*PI;
 		else if (angle<-PI)
 			angle+=2*PI;
-		//Normalización de la diferencia de angulos entre -PI y +PI
-		double angDiff=angle-yaw;
+		double angDiff=angle-robotPose.theta.getValue();
 		if(angDiff>PI)
 			angDiff-=2*PI;
 		else if (angDiff<-PI)
 			angDiff+=2*PI;
 
-		//Reguladores en cascada
-		if (abs(angDiff)>=0.1)	//mucho error en la orientacion
+		//Master and slave control.
+		if (abs(angDiff)>=0.1)	//too much error in orientation
 		{
 			sp=0.0;
-			if(angle>yaw)
+			if(angle>robotPose.theta.getValue())
 				rt=1.0;
 			else
 				rt=-1.0;
@@ -125,15 +117,15 @@ public:
 		else
 		{
 			rt=0.5*angDiff;
-			if(error.module()>0.2)	//mucho error de distancia
+			if(error.module()>0.2)	//too much error in distance
 			{
 				sp=10.0;
 			}
-			else	//cerca del punto final
+			else	//Near final point
 			{
-				//eliminacion del primer punto de la lista
+				//First point of the path is going to be erased
 				path.erase(path.begin(),path.begin()+1);
-				if(path.size()==0)//lista vacia
+				if(path.size()==0)	//list is empty
 				{
 					rt=0;
 					sp=0;
