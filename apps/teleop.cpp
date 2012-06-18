@@ -201,7 +201,8 @@ int main(int argc,char* argv[])
 		robot=new Nemo;*/
 	mrcoreInit();
 	MobileRobot* robot=new Neo();
-	robot->connectClients("127.0.0.1",13000);
+	//robot->connectClients("127.0.0.1",13000);
+	robot->connectClients("192.168.0.150",13000);
 //	robot->connectLog("log/columns");
 	MyGlutApp myApp("teleop",robot);
 	myApp.Run();
