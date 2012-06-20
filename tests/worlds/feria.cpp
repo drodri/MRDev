@@ -220,12 +220,12 @@ void CreateWorldFeria(string filename)
 	CreateBox(tableHeight, tableWidth, tableDeep, Vector2D(15.45,20), mesa6);
 	CreateBox(tableHeight, tableWidth, tableDeep, Vector2D(10,20), mesa7);
 	CreateBox(tableHeight, tableDeep, tableWidth, Vector2D(6.05,22), mesa8);
-	//CreateBox(tableHeight, tableDeep, tableWidth, Vector2D(6.05,22), mesa9);
-	//CreateBox(tableHeight, tableDeep, tableWidth, Vector2D(6.05,22), mesa10);
-	//CreateBox(tableHeight, tableDeep, tableWidth, Vector2D(6.05,22), mesa11);
-	//CreateBox(tableHeight, tableDeep, tableWidth, Vector2D(6.05,22), mesa12);
-	//CreateBox(tableHeight, tableDeep, tableWidth, Vector2D(6.05,22), mesa13);
-	//CreateBox(tableHeight, tableDeep, tableWidth, Vector2D(6.05,22), mesa14);
+	CreateBox(tableHeight, tableDeep, tableWidth, Vector2D(3.8,16.7), mesa9);
+	CreateBox(tableHeight, tableWidth, tableDeep, Vector2D(2.8,14.35), mesa10);
+	CreateBox(tableHeight, tableDeep, tableWidth, Vector2D(6.3,7.2), mesa11);
+	CreateBox(tableHeight, tableWidth, tableDeep, Vector2D(9.98,7.2), mesa12);
+	CreateBox(tableHeight, tableWidth, tableDeep, Vector2D(6.8,15.85), mesa13);
+	CreateBox(tableHeight, tableWidth, tableDeep, Vector2D(9.98,15.85), mesa14);
 	for(i=0;i<mesa1.size();i++)
 	{
 		building->addFace(mesa1[i]);
@@ -236,12 +236,12 @@ void CreateWorldFeria(string filename)
 		building->addFace(mesa6[i]);
 		building->addFace(mesa7[i]);
 		building->addFace(mesa8[i]);
-		//building->addFace(mesa9[i]);
-		//building->addFace(mesa10[i]);
-		//building->addFace(mesa11[i]);
-		//building->addFace(mesa12[i]);
-		//building->addFace(mesa13[i]);
-		//building->addFace(mesa14[i]);
+		building->addFace(mesa9[i]);
+		building->addFace(mesa10[i]);
+		building->addFace(mesa11[i]);
+		building->addFace(mesa12[i]);
+		building->addFace(mesa13[i]);
+		building->addFace(mesa14[i]);
 	}
 
 	
