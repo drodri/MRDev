@@ -27,7 +27,8 @@ public:
 		//path.push_back(vector2d(x,y+10));
 		//path.push_back(vector2d(x,y));
 		
-		path.push_back(Vector2D(8,8));
+		//path Building.world
+		/*path.push_back(Vector2D(8,8));
 		path.push_back(Vector2D(8,1));
 		path.push_back(Vector2D(1,1));
 		path.push_back(Vector2D(1,8));
@@ -42,7 +43,15 @@ public:
 		path.push_back(Vector2D(1,1));
 		path.push_back(Vector2D(1,8));
 		//Tercer piso
-		path.push_back(Vector2D(8,8));
+		path.push_back(Vector2D(8,8));*/
+
+		//path DisamLab.world
+		float x=6.0, y=1.5;
+		path.push_back(Vector2D(6-x,1.5-y));
+		path.push_back(Vector2D(8-x,1.5-y));
+		path.push_back(Vector2D(8.3-x,4.3-y));
+		path.push_back(Vector2D(6-x,2.5-y));
+		path.push_back(Vector2D(6-x,1.5-y));
 		traj.setPath(path);
 		
 		manual=true;
@@ -63,14 +72,13 @@ public:
 		Pose3D realPose;
 		robot->getPose3D(realPose);
 		robot->getLaserData(laserData);
-
 		//The odometry is full 3D, lets handle it only in 2D, as a Pose (x, y, theta)
 
 		Transformation3D pose=odom.pose;
 		double roll,pitch,yaw;
 		pose.orientation.getRPY(roll,pitch,yaw);
 		Pose2D robotPose(pose.position.x,pose.position.y,yaw);
-
+		//cout<<realPose.position<<endl;
 		if(manual)
 			robot->move(va,vg);
 		else
@@ -119,7 +127,7 @@ public:
 			rt=0.5*angDiff;
 			if(error.module()>0.2)	//too much error in distance
 			{
-				sp=10.0;
+				sp=1.0;
 			}
 			else	//Near final point
 			{
@@ -203,7 +211,7 @@ int main(int argc,char* argv[])
 	MobileRobot* robot=new Neo();
 	//robot->connectClients("127.0.0.1",13000);
 	robot->connectClients("192.168.0.150",13000);
-//	robot->connectLog("log/columns");
+	//robot->connectLog("log/columns");
 	MyGlutApp myApp("teleop",robot);
 	myApp.Run();
 	return 0;   
