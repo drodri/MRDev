@@ -74,15 +74,15 @@ public:
 		Pose3D realPose;
 		LaserData laserData;
 		robot->getOdometry(odom);
-		robot->getPose3D(realPose);
+		//robot->getPose3D(realPose);
 		robot->getLaserData(laserData);
 		//The odometry is full 3D, lets handle it only in 2D, as a Pose (x, y, theta)
 
-		//Transformation3D pose=odom.pose;
+		Transformation3D pose=odom.pose;
 		double roll,pitch,yaw;
-		//pose.orientation.getRPY(roll,pitch,yaw);
-		//Pose2D robotPose(pose.position.x,pose.position.y,yaw);
-		cout<<realPose.position<<endl;
+		pose.orientation.getRPY(roll,pitch,yaw);
+		Pose2D robotPose(pose.position.x,pose.position.y,yaw);
+		//cout<<realPose.position<<endl;
 		if(manual)
 			robot->move(va,vg);
 		else
@@ -92,11 +92,9 @@ public:
 			control.setCommand(va,vg);
 			control.setData(laserData);*/
 			float va2=va,vg2=vg;
-			realPose.orientation.getRPY(roll,pitch,yaw);
-			//odom.pose.orientation.getRPY(roll,pitch,yaw);
-			Pose2D robotPose2(realPose.position.x,realPose.position.y,yaw);
-			//Pose2D robotPose2(odom.pose.position.x,odom.pose.position.y,yaw);
-			modeAutomatic(robotPose2, va2,vg2);
+			//realPose.orientation.getRPY(roll,pitch,yaw);
+			//Pose2D robotPose2(realPose.position.x,realPose.position.y,yaw);
+			modeAutomatic(robotPose, va2,vg2);
 			if(reactiveControl(laserData,0.5))
 				robot->move(va2,vg2);
 			else
