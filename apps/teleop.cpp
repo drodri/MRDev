@@ -46,14 +46,19 @@ public:
 		path.push_back(Vector2D(8,8));*/
 
 		//path DisamLab.world
-		float x=6.0, y=1.5;
+		/*float x=6.0, y=1.5;
 		path.push_back(Vector2D(6-x,1.5-y));
 		path.push_back(Vector2D(8-x,1.5-y));
-		path.push_back(Vector2D(8.3-x,4.3-y));
+		path.push_back(Vector2D(8.3-x,4-y));
+		path.push_back(Vector2D(8.3-x,3-y));
 		path.push_back(Vector2D(6-x,2.5-y));
-		path.push_back(Vector2D(6-x,1.5-y));
-		traj.setPath(path);
+		path.push_back(Vector2D(6-x,1.5-y));*/
 		
+		path.push_back(Vector2D(1.0,0));
+		path.push_back(Vector2D(0,0));
+		
+		traj.setPath(path);
+
 		manual=true;
 		//robot->startLogging("log/building");
 	}
@@ -66,19 +71,18 @@ public:
 	void Timer(float time)
 	{
 		Odometry odom;
-		LaserData laserData;
-
-		robot->getOdometry(odom);
 		Pose3D realPose;
+		LaserData laserData;
+		robot->getOdometry(odom);
 		robot->getPose3D(realPose);
 		robot->getLaserData(laserData);
 		//The odometry is full 3D, lets handle it only in 2D, as a Pose (x, y, theta)
 
-		Transformation3D pose=odom.pose;
+		//Transformation3D pose=odom.pose;
 		double roll,pitch,yaw;
-		pose.orientation.getRPY(roll,pitch,yaw);
-		Pose2D robotPose(pose.position.x,pose.position.y,yaw);
-		//cout<<realPose.position<<endl;
+		//pose.orientation.getRPY(roll,pitch,yaw);
+		//Pose2D robotPose(pose.position.x,pose.position.y,yaw);
+		cout<<realPose.position<<endl;
 		if(manual)
 			robot->move(va,vg);
 		else
@@ -89,12 +93,27 @@ public:
 			control.setData(laserData);*/
 			float va2=va,vg2=vg;
 			realPose.orientation.getRPY(roll,pitch,yaw);
+			//odom.pose.orientation.getRPY(roll,pitch,yaw);
 			Pose2D robotPose2(realPose.position.x,realPose.position.y,yaw);
+			//Pose2D robotPose2(odom.pose.position.x,odom.pose.position.y,yaw);
 			modeAutomatic(robotPose2, va2,vg2);
-			robot->move(va2,vg2);
+			if(reactiveControl(laserData,0.5))
+				robot->move(va2,vg2);
+			else
+				robot->move(0.0,0.0);
 		}
 	}
-	void modeAutomatic(Pose2D robotPose, float& sp, float& rt)
+	bool reactiveControl(LaserData laser,double distMin=0.4)
+	{
+		vector<double> ranges=laser.getRanges();
+		for(int i=0;i<ranges.size();i++)
+		{
+			if(ranges[i]<distMin)
+				return false;
+		}
+		return true;
+	}
+	void modeAutomatic(Pose2D& robotPose, float& sp, float& rt)
 	{
 		Vector2D error=path.at(0)-robotPose.position();
 		double angle=error.argument();
@@ -114,20 +133,21 @@ public:
 			angDiff+=2*PI;
 
 		//Master and slave control.
-		if (abs(angDiff)>=0.1)	//too much error in orientation
+		if (abs(angDiff)>=2*DEG2RAD)	//too much error in orientation
 		{
 			sp=0.0;
 			if(angle>robotPose.theta.getValue())
-				rt=1.0;
+				rt=0.1;
 			else
-				rt=-1.0;
+				rt=-0.1;
 		}
 		else
 		{
 			rt=0.5*angDiff;
-			if(error.module()>0.2)	//too much error in distance
+			cout<<error.module()<<endl;
+			if(error.module()>0.1)	//too much error in distance
 			{
-				sp=1.0;
+				sp=0.1;
 			}
 			else	//Near final point
 			{
