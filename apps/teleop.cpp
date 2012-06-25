@@ -28,9 +28,97 @@ public:
 		path.push_back(Vector2D(x,y));
 		traj.setPath(path);
 
+		//path Building.world
+		/*path.push_back(Vector2D(8,8));
+		path.push_back(Vector2D(8,1));
+		path.push_back(Vector2D(1,1));
+		path.push_back(Vector2D(1,8));
+		//Primer piso
+		path.push_back(Vector2D(8,8));
+		path.push_back(Vector2D(8,1));
+		path.push_back(Vector2D(1,1));
+		path.push_back(Vector2D(1,8));
+		//Segundo piso
+		path.push_back(Vector2D(8,8));
+		path.push_back(Vector2D(8,1));
+		path.push_back(Vector2D(1,1));
+		path.push_back(Vector2D(1,8));
+		//Tercer piso
+		path.push_back(Vector2D(8,8));*/
+
+		//path DisamLab.world
+		/*float x=6.0, y=1.5;
+		path.push_back(Vector2D(6-x,1.5-y));
+		path.push_back(Vector2D(8-x,1.5-y));
+		path.push_back(Vector2D(8.3-x,4-y));
+		path.push_back(Vector2D(8.3-x,3-y));
+		path.push_back(Vector2D(6-x,2.5-y));
+		path.push_back(Vector2D(6-x,1.5-y));*/
+
+
 		manual=true;
 		robot->startLogging("log/disamlog1");
 	}
+/*	bool reactiveControl(LaserData laser,double distMin=0.4)
+	{
+		vector<double> ranges=laser.getRanges();
+		for(int i=0;i<ranges.size();i++)
+		{
+			if(ranges[i]<distMin)
+				return false;
+		}
+		return true;
+	}
+	void modeAutomatic(Pose2D& robotPose, float& sp, float& rt)
+	{
+		Vector2D error=path.at(0)-robotPose.position();
+		double angle=error.argument();
+		//standardization of angles between -PI y +PI
+		if(robotPose.theta>PI)
+			robotPose.theta=robotPose.theta-2*PI;
+		else if(robotPose.theta<-PI)
+			robotPose.theta=robotPose.theta+2*PI;
+		if(angle>PI)
+			angle-=2*PI;
+		else if (angle<-PI)
+			angle+=2*PI;
+		double angDiff=angle-robotPose.theta.getValue();
+		if(angDiff>PI)
+			angDiff-=2*PI;
+		else if (angDiff<-PI)
+			angDiff+=2*PI;
+
+		//Master and slave control.
+		if (abs(angDiff)>=2*DEG2RAD)	//too much error in orientation
+		{
+			sp=0.0;
+			if(angle>robotPose.theta.getValue())
+				rt=0.1;
+			else
+				rt=-0.1;
+		}
+		else
+		{
+			rt=0.5*angDiff;
+			cout<<error.module()<<endl;
+			if(error.module()>0.1)	//too much error in distance
+			{
+				sp=0.1;
+			}
+			else	//Near final point
+			{
+				//First point of the path is going to be erased
+				path.erase(path.begin(),path.begin()+1);
+				if(path.size()==0)	//list is empty
+				{
+					rt=0;
+					sp=0;
+					manual=true;
+				}
+			}
+
+		}
+	}*/
 	void Draw(void)
 	{
 		scene.Draw();
