@@ -1,3 +1,5 @@
+#pragma once
+
 #include "mrcore/mrcore.h"
 
 #include <iostream>

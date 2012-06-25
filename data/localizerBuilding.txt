@@ -1,8 +1,9 @@
-numParticles:	25
+numParticles:	100
 world: 		building.world 
 robot: 		neo
 initPose: 	 1 8 0
 connect: 	log	log/building
 neff:		0.75
+uselaser:	no
 		
 
