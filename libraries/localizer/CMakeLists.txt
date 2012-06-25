@@ -1,7 +1,6 @@
 ADD_DEFINITIONS(-DFREEGLUT_STATIC -D_CRT_SECURE_NO_WARNINGS)
 ADD_LIBRARY(localizer STATIC  particle.cpp
 			      localizer.cpp
-				gaussian.cpp
 				)
 
 

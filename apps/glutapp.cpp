@@ -40,10 +40,10 @@ void OnTimer(int value)
 {
 //poner aqui el código de animacion
 	if(theApp)
-		theApp->Timer(0.025);
+		theApp->Timer(theApp->timer/1000);
 
 	//no borrar estas lineas
-	glutTimerFunc(25,OnTimer,0);
+	glutTimerFunc(theApp->timer,OnTimer,0);
 	glutPostRedisplay();
 }
 void OnMouseClick(int b,int state, int x,int y)
@@ -56,6 +56,13 @@ void OnMouseMove(int x,int y)
 {
 	if(theApp)
 		theApp->MouseMove(x,y);
+	
+	glutPostRedisplay();
+}
+void OnReshape(int x,int y)
+{
+	if(theApp)
+		theApp->Reshape(x,y);
 	
 	glutPostRedisplay();
 }
@@ -86,6 +93,8 @@ GlutApp::GlutApp(string name)
 		glutSpecialFunc(OnSpecialKeyboardDown);
 		glutMotionFunc(OnMouseMove);
 		glutMouseFunc(OnMouseClick);
+		glutReshapeFunc(OnReshape);
+		timer=25;
 	}
 }
 void GlutApp::Run()

@@ -65,7 +65,7 @@ void CreateBox(double height, double deep, double width, Vector2D origin, vector
 	box[4].setBase(Transformation3D(origin.x+deep,origin.y,0,Y_AXIS,-PI/2));
 }
 
-void CreateWorldFeria(string filename)
+void CreateWorldRobocityFair(string filename)
 {
 	unsigned int i=0;
 	World world;

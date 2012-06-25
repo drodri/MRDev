@@ -1,6 +1,7 @@
 world: building.world
-robots: 1
-neo 13000 1 8 0
+robots: 2
+neo 13000 1 8 0 0
+neo 14000 1 8 5	1.5
 persons: 60
 noname  1.8 10 1 0.1
 noname  1.2 11 1 0.1

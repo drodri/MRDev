@@ -1,6 +1,5 @@
 
-ADD_LIBRARY(objects STATIC
-		    objects.cpp)
+#ADD_LIBRARY(objects STATIC objects.cpp)
 			
 		
 

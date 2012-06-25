@@ -1,6 +1,46 @@
 #include "localizer.h"
 #include <float.h>
+bool Localizer::loadConfig(istream& is)
+{
+	while(1)
+	{
+		string line;
+		getline(is,line);
+		if(!is.good())
+			break;
+		if(line[0]=='#')
+			continue;
+		if(line=="end")
+			return true;
 
+		stringstream buffer(line);
+		string command;
+		buffer>>command;
+		
+		if(command=="numParticles:")
+		{
+			int num;
+			buffer>>num;
+			setNumParticles(num);
+		}
+		else if(command=="neff:")
+		{
+			float num;
+			buffer>>num;
+			setNeff(num);
+		}
+		else if(command=="uselaser:")
+		{
+			string uselas;
+			buffer>>uselas;
+			if(uselas=="yes")
+				useLaser=true;
+			else 
+				useLaser=false;
+		}
+	}
+	return true;
+}
 void Localizer::drawGL(void)
 {
 	map.drawGL();
@@ -17,11 +57,9 @@ void Localizer::drawGL(void)
 	//odomPose.drawGL();
 
 	glPushMatrix();
-	groundTraj.drawGL();
-	glTranslatef(0,0,0.1);
+	glTranslatef(0,0,0.05);
 	odomTraj.drawGL();
-
-	glTranslatef(0,0,0.1);
+	glTranslatef(0,0,0.05);
 	filterTraj.drawGL();
 	glPopMatrix();
 }
@@ -60,7 +98,7 @@ void Localizer::computeDrawWeights()
 		particles[i].drawWeight=particles[i].weight/max;
 	}
 }
-void Localizer::initializeGaussian(Pose3D initPose,double noise)
+void Localizer::setInitPoseGaussian(Pose3D initPose,double noise)
 {
 	odomPose=initPose;
 
@@ -127,6 +165,9 @@ void Localizer::log2linearWeights( )
 }
 void Localizer::observe(const LaserData& laser)
 {
+	if(!useLaser)
+		return;
+
 	LaserSensorSim lms;
 	lms.setLaserProperties(laser.getStartAngle(), laser.getStep()*skipLaser, laser.size(), laser.getMaxRange(), laser.getSigma());
 	laserD=laser;
@@ -186,14 +227,14 @@ void Localizer::observe(const LaserData& laser)
 	normalizeWeights(); //Check if necessary
 //	printInfo();
 }
-bool Localizer::checkResample()
+bool Localizer::resample()
 {
 	double nef=neff();
 	bool r = false;
 	//if(nef<particles.size()/2)
 	if(nef<neffThreshold*particles.size())
 	{
-		resample();
+		performResample();
 		r = true;
 	}
 	computeDrawWeights();
@@ -213,7 +254,6 @@ void Localizer::normalizeWeights()
 	if (sum == 0)
 	{
 	    cout << "sum is 0 " << endl;
-
 	}
 
 //	LOG_INFO("Sum: "<<sum);
@@ -225,22 +265,13 @@ void Localizer::normalizeWeights()
         //    cout << "normalized weight is nan " << endl;
 	}
 }
-void Localizer::move(Odometry odom,double noise,Pose3D* groundTruth)
+void Localizer::move(Pose3D inc,double noise)
 {
 	//static //FIXME, select robot model as parameter
 	//Remove Wheels here
-
-	static Pose3D lastOdom=odom.pose;
-	Pose3D inc=lastOdom.inverted()*odom.pose;
-	lastOdom=odom.pose;
 	odomPose*=inc;
 	odomTraj.push_back(odomPose.position);
 
-	if(groundTruth)
-	{
-		ground=(*groundTruth);
-		groundTraj.push_back(ground.position);
-	}
 	for(unsigned int i=0;i<particles.size();i++)
 	{
 		Pose3D oldPose=particles[i].pose;
@@ -293,7 +324,7 @@ double Localizer::neff()
 
 	return 1.0/neff;
 }
-void Localizer::resample() //systematic
+void Localizer::performResample() //systematic
 {
 	LOG_INFO("Resampling");
 	int num=particles.size();

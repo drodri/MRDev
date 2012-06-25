@@ -1,0 +1,11 @@
+world: 		robocity.world 
+robot: 		nemo
+initPose: 	14 16 0 1.5
+connect: 	log	log/robocity4
+
+localizer
+	#This is a comment
+	numParticles:	100
+	neff:		0.75
+	uselaser:	yes
+end

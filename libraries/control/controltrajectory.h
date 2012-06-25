@@ -1,3 +1,5 @@
+#pragma once
+
 #include "mrcore/mrcore.h"
 
 #include <iostream>
@@ -7,9 +9,11 @@
 using namespace mr;
 using namespace std;
 
-class MobileRobotControl
+class ControlTrajectory
 {
 public:
+	virtual void getSpeed(float& forward,float& turn){};
+
 	
 
 private:

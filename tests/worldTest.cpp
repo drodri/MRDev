@@ -34,6 +34,7 @@ QuadrotorSim *quadrotor;
 //Implemented in "worlds" folder
 void CreateWorldEuitiLab(string filename);
 void CreateWorldBuilding(string filename);
+void CreateWorldRobocityFair(string filename);
 
 void InitWorld1();
 void InitWorldColumns();
@@ -58,7 +59,9 @@ int main(int argc, char* argv[])
 	scene.init();
 
 //		string filename="data/euitilab.world";
-	string filename="data/disamLab.world";
+//	string filename="data/disamLab.world";
+	string filename="data/robocity.world";
+	CreateWorldRobocityFair(filename);
 //	CreateWorldEuitiLab(filename);
 //	string filename="building.world";
 //	CreateWorldBuilding(filename);
