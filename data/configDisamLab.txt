@@ -1,6 +1,6 @@
 world: disamLab.world
 robots: 1
-neo 13000 6.0 1.5 0
+nemo 13000 6.0 1.5 0
 persons: 5
 noname	1.7 7 2 0.1
 noname  1.8 1 1 0.1
