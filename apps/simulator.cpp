@@ -1,54 +1,52 @@
 #include "mrcore/mrcore.h"
 #include <iostream>
-#include "glutapp.h"
+#include "mrcoreglutapp.h"
 
 using namespace mr;
 using namespace std;
 
-class MyGlutApp: public GlutApp
+class SimulatorApp: public MRCoreGlutApp
 {
 public:
-	MyGlutApp(string name,Simulator& s):GlutApp(name),simulator(s)
+	SimulatorApp(string name,Simulator& s):MRCoreGlutApp(name),simulator(s)
 	{
 		scene.addObject(simulator.getWorld());
 		scene.SetViewPoint(35,160,25);	
+		numRobot=-1;
 	}
 	void Draw(void)
 	{
-		scene.Draw();
+		Transformation3D t;
+		if(numRobot>=0 && numRobot<simulator.numRobots())
+		{
+			simulator.getRobot(numRobot)->getPose3D(t);
+
+			scene.SetViewCenter(t.position.x,t.position.y,t.position.z);
+			double dist,alfa,beta;
+			scene.GetViewPoint(dist,alfa,beta);
+			double r,p,y;
+			t.orientation.getRPY(r,p,y);
+			scene.SetViewPoint(dist,y*RAD2DEG+180,beta);
+		}
+	
+		MRCoreGlutApp::Draw();
 	}
 	void Timer(float time)
 	{
 		simulator.getWorld()->simulate(0.020);
-	}
-	void MouseMove(int x,int y)
-	{
-		scene.MouseMove(x,y);
-		glutPostRedisplay();
-	}
+	}	
 	void Key(unsigned char key)
 	{
-		scene.KeyDown(key);
-	}
-	void MouseClick(int b,int state, int x,int y)
-	{
-		bool down=(state==GLUT_DOWN);
-		int button;
-		if(b==GLUT_LEFT_BUTTON)
-			button=MOUSE_LEFT_BUTTON;
-		if(b==GLUT_RIGHT_BUTTON)
-			button=MOUSE_RIGHT_BUTTON;
-			
-		int specialKey = glutGetModifiers();
-		bool ctrlKey= (specialKey & GLUT_ACTIVE_CTRL)?true:false ;
-		bool sKey= specialKey&GLUT_ACTIVE_SHIFT ;
-		
-		scene.MouseButton(x,y,b,down,sKey,ctrlKey);
-		glutPostRedisplay();
+		if(key=='+' && numRobot<simulator.numRobots()-1)
+			numRobot++;
+		if(key=='-' && numRobot>-1)
+			numRobot--;
+
+		MRCoreGlutApp::Key(key);
 	}
 private:
-	GLScene scene;
 	Simulator simulator;	
+	int numRobot;
 };
 
 void printUsage();
@@ -71,7 +69,7 @@ int main(int argc,char* argv[])
 	Simulator sim;
 	sim.load(file);
 
-	MyGlutApp myApp("MR Simulator",sim);
+	SimulatorApp myApp("MR Simulator",sim);
 	myApp.Run();
 	return 0;   
 }

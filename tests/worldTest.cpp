@@ -31,6 +31,11 @@ PowerCube70 *arm;
 AdeptOneSim *manipulator;
 QuadrotorSim *quadrotor;
 
+//Implemented in "worlds" folder
+void CreateWorldEuitiLab(string filename);
+void CreateWorldBuilding(string filename);
+void CreateWorldRobocityFair(string filename);
+
 void InitWorld1();
 void InitWorldColumns();
 void InitWorldColumns2();
@@ -53,12 +58,17 @@ int main(int argc, char* argv[])
 	glutTimerFunc(100,OnTimer,0);
 	scene.init();
 
-	//InitWorldColumns2();
-
-	InitWorldSquaredRingWalls();
-//	InitWorld1();
-//probador de grabar y cargar
-	//probando a grabar en un fichero el prismatic part, despues lo añado
+//		string filename="data/euitilab.world";
+//	string filename="data/disamLab.world";
+	string filename="data/robocity.world";
+	CreateWorldRobocityFair(filename);
+//	CreateWorldEuitiLab(filename);
+//	string filename="building.world";
+//	CreateWorldBuilding(filename);
+	StreamFile myfile(filename,true);
+	myfile.read(&world);
+	
+	
 /*	if(1){
 	StreamFile myfile("tmp.txt",false);
 	myfile.write(&world);
@@ -160,8 +170,6 @@ void OnKeyboardDown(unsigned char key, int x, int y)
 	
 	myrobot->move(speed,rotspeed);
 	pruebaLaser->updateSensorData();*/
-
-	scene.KeyDown(key);
 	glutPostRedisplay();	
 
 }

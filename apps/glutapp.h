@@ -28,10 +28,10 @@ public:
 	virtual void Draw(){}
 	virtual void MouseMove(int x,int y){}
 	virtual void MouseClick(int button,int state, int x,int y){}
-
+	virtual void Reshape(int w, int h){}
+	void SetTimer(int t){timer=t;}
 	void Run();
-private:
-
+	int timer;//ellapsed time in milliseconds
 	
 
 };

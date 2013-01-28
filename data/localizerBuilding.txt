@@ -1,0 +1,13 @@
+world: 		building.world 
+robot: 		neo
+initPose: 	1 8 0 0
+connect: 	log	log/building
+
+localizer
+	#This is a comment
+	numParticles:	100
+	neff:		0.75
+	uselaser:	no
+end
+		
+

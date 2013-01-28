@@ -1,0 +1,13 @@
+world: 		disamLab.world 
+robot: 		nemo
+initPose: 	6 1.5 0 0
+#connect: 	tcp 192.168.0.150 13000
+connect: 	log log/disam1
+#log:		log/disam1
+
+localizer
+	#This is a comment
+	numParticles:	100
+	neff:		0.75
+	uselaser:	no
+end
