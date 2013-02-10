@@ -1,5 +1,5 @@
 PROJECT(MRDev)
-cmake_minimum_required(VERSION 2.8)
+#cmake_minimum_required(VERSION 2.8)
 
 ########### Find MRCore
 IF (WIN32)

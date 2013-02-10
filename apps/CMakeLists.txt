@@ -10,6 +10,7 @@ IF(WIN32)
 	TARGET_LINK_LIBRARIES(robapp optimized 	mrcore 		localizer 	control		freeglut_static)
 ELSE(WIN32) #LINUX	
 	TARGET_LINK_LIBRARIES(simulator mrcore glut GL GLU )
+	TARGET_LINK_LIBRARIES(robapp mrcore localizer control glut GL GLU)
 ENDIF(WIN32)
 		
 ##################################

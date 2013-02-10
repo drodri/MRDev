@@ -59,7 +59,7 @@ int main(int argc,char* argv[])
 		file=string(argv[1]);
 	else
 	{
-		cout<<"You have not specify a configuration file as command line parameter"<<endl;
+		cout<<"You have not specified a configuration file as command line parameter"<<endl;
 		cout<<"Please type configuration file: ";
 		string file;
 		cin>>file;
